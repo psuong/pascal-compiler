@@ -3,3 +3,7 @@
 
 # swap files
 *.swp
+
+# Pascal Related Items
+*.o
+/helloworld
