@@ -19,8 +19,15 @@ def scan_pascal_file(mem_map):
     Scans the memory mapped file and yield a token, value, and position.
 
     :param mem_map: mmap
+    :return: (token, value, position)
     """
-    pass
+    character_list = 'abcdefghjklmnopqrstuvwxyz'
+    word = ''
+    for char in mem_map:
+        if char in character_list:
+            word += char
+        elif char not in character_list:
+            word = ''
 
 
 def print_memory_mapped_file(mem_map):
