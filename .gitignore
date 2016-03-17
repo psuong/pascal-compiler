@@ -7,3 +7,9 @@
 # Pascal Related Items
 *.o
 /helloworld
+
+# Jetbrains Folder and Files
+*.idea/
+
+# ImDone Plugin
+.imdone/

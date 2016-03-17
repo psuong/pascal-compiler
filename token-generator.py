@@ -1,7 +1,7 @@
 from sys import argv
 from mmap import mmap
 
-
+# Global variables to pass into the other parts of the compiler
 GLOBAL_COL_NUM = 0
 GLOBAL_LINE_NUM = 0
 
@@ -37,8 +37,9 @@ def scan_pascal_file(mem_map):
     word = ''
     for char in mem_map:
         GLOBAL_COL_NUM += 1
-        word += char
-        if char is ' ':
+        if char.isalpha():
+            word += char
+        elif char is ' ':
             print '%s | Line: %s | Col: %s' % (word, GLOBAL_LINE_NUM, GLOBAL_COL_NUM - len(word))
             word = ''
         elif char == '\n':
@@ -48,6 +49,7 @@ def scan_pascal_file(mem_map):
             word = ''
         elif char in special_characters:
             print '%s | Line: %s | Col: %s' % (char, GLOBAL_LINE_NUM, GLOBAL_COL_NUM)
+            word = ''
 
 
 def print_memory_mapped_file(mem_map):
@@ -61,4 +63,5 @@ def print_memory_mapped_file(mem_map):
 
 
 if __name__ == '__main__':
-    scan_pascal_file(open_pascal_file())
+    # scan_pascal_file(open_pascal_file())
+    print_memory_mapped_file(open_pascal_file())
