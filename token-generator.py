@@ -2,6 +2,10 @@ from sys import argv
 from mmap import mmap
 
 
+GLOBAL_COL_NUM = 0
+GLOBAL_LINE_NUM = 0
+
+
 def open_pascal_file():
     """
     Opens the pascal file and loads the pascal file into memory.
@@ -21,13 +25,28 @@ def scan_pascal_file(mem_map):
     :param mem_map: mmap
     :return: (token, value, position)
     """
+    # TODO: Do logic processing on each word parsed out of the pascal file.
     character_list = 'abcdefghjklmnopqrstuvwxyz'
+    # TODO: Complete the list of special characters
+    special_characters = '();\'.'
+
+    global GLOBAL_COL_NUM
+    global GLOBAL_LINE_NUM
+
+    # Variable below allows building a word
     word = ''
     for char in mem_map:
-        if char in character_list:
-            word += char
-        elif char not in character_list:
+        GLOBAL_COL_NUM += 1
+        word += char
+        if char is ' ':
+            print word
             word = ''
+        if char == '\n':
+            GLOBAL_COL_NUM = 0
+            GLOBAL_LINE_NUM += 1
+            print word
+        elif char in special_characters:
+            print '%s | Line: %s | Col: %s' % (char, GLOBAL_LINE_NUM, GLOBAL_COL_NUM)
 
 
 def print_memory_mapped_file(mem_map):
@@ -41,4 +60,4 @@ def print_memory_mapped_file(mem_map):
 
 
 if __name__ == '__main__':
-    print_memory_mapped_file(open_pascal_file())
+    scan_pascal_file(open_pascal_file())
