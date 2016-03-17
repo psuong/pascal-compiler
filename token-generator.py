@@ -28,7 +28,7 @@ def scan_pascal_file(mem_map):
     # TODO: Do logic processing on each word parsed out of the pascal file.
     character_list = 'abcdefghjklmnopqrstuvwxyz'
     # TODO: Complete the list of special characters
-    special_characters = '();\'.'
+    special_characters = '();.'
 
     global GLOBAL_COL_NUM
     global GLOBAL_LINE_NUM
@@ -39,12 +39,13 @@ def scan_pascal_file(mem_map):
         GLOBAL_COL_NUM += 1
         word += char
         if char is ' ':
-            print word
+            print '%s | Line: %s | Col: %s' % (word, GLOBAL_LINE_NUM, GLOBAL_COL_NUM - len(word))
             word = ''
-        if char == '\n':
+        elif char == '\n':
             GLOBAL_COL_NUM = 0
             GLOBAL_LINE_NUM += 1
-            print word
+            print '%s | Line: %s | Col: %s' % (word, GLOBAL_LINE_NUM, GLOBAL_COL_NUM - len(word))
+            word = ''
         elif char in special_characters:
             print '%s | Line: %s | Col: %s' % (char, GLOBAL_LINE_NUM, GLOBAL_COL_NUM)
 
