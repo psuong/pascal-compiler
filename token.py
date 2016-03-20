@@ -1,5 +1,4 @@
-class Token:
-    def tk_keyword_setup():
+def tk_keyword_setup():
         """
         Generates a dictionary of keywords found in Pascal.
 
@@ -8,17 +7,12 @@ class Token:
         keyword_dict = {}
         with open('keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
-                keyword_dict[line] = 'TK_%s' % (line)
+                keyword_dict[line.rstrip()] = 'TK_%s' % (line)
         return keyword_dict
 
-    def __init__(self):
-        def tk_keyword_setup():
-            keyword_dict = {}
-            with open('keywords.txt', 'r') as keyword_file:
-                for line in keyword_file:
-                    keyword_dict[line] = 'TK_%s' % (line)
-            return keyword_dict
 
+class Token:
+   def __init__(self):
         self.TK_Operators = {
             '(': 'TK_OPEN_PARENTH',
             ')': 'TK_CLOSE_PARENTH',
@@ -34,4 +28,4 @@ class Token:
             '<': 'TK_LESS',
             ':=': 'TK_ASSIGNMENT'
         }
-        self.TK_Keywords = tk_keyword_setup()
+        self.TK_Keywords = None

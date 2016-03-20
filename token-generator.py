@@ -1,10 +1,12 @@
 from sys import argv
 from mmap import mmap
+from token import tk_keyword_setup, Token
 
 # Global variables to pass into the other parts of the compiler
 GLOBAL_COL_NUM = 0
 GLOBAL_LINE_NUM = 0
-
+TOKEN_VALUE = None
+TOKEN_TYPE = None
 
 def open_pascal_file():
     """
@@ -25,6 +27,12 @@ def scan_pascal_file(mem_map):
     :param mem_map: mmap
     :return: (token, value, position)
     """
+    # TODO: Return a token type
+    token = Token()
+    
+    # Set up the token object
+    token.TK_Keywords = tk_keyword_setup()
+
     # TODO: Do logic processing on each word parsed out of the pascal file.
     character_list = 'abcdefghjklmnopqrstuvwxyz'
     # TODO: Complete the list of special characters
@@ -32,6 +40,8 @@ def scan_pascal_file(mem_map):
 
     global GLOBAL_COL_NUM
     global GLOBAL_LINE_NUM
+    global TOKEN_VALUE
+    global TOKEN_TYPE
 
     # Variable below allows building a word
     word = ''
@@ -63,5 +73,5 @@ def print_memory_mapped_file(mem_map):
 
 
 if __name__ == '__main__':
-    # scan_pascal_file(open_pascal_file())
-    print_memory_mapped_file(open_pascal_file())
+    scan_pascal_file(open_pascal_file())
+    # print_memory_mapped_file(open_pascal_file())
