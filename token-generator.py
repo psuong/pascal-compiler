@@ -28,7 +28,6 @@ def scan_pascal_file(mem_map):
     :param mem_map: mmap
     :return: (token, value, position)
     """
-    # TODO: Return a token type
     token = Token()
     # Set up the token object
     token.TK_Keywords = tk_keyword_setup()
@@ -47,7 +46,10 @@ def scan_pascal_file(mem_map):
             word += char
         elif char is ' ':
             if word in token.TK_Keywords.keys():
-                assign_token_values(token.TK_Keywords[word], word, col_num, line_num, True)
+                assign_token_values(token.TK_Keywords[word],
+                                    word, col_num,
+                                    line_num,
+                                    True)
             # Reset the word
             word = ''
         # Case: If the char is a newline char, then reset the column no.
@@ -57,7 +59,10 @@ def scan_pascal_file(mem_map):
             line_num += 1
             # print 'Col: %i, Line: %i' % (GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
         elif char in token.TK_Operators.keys():
-            assign_token_values(token.TK_Operators[char], char, col_num, line_num, True)
+            assign_token_values(token.TK_Operators[char],
+                                char, col_num,
+                                line_num,
+                                True)
 
 
 def print_memory_mapped_file(mem_map):
@@ -70,7 +75,11 @@ def print_memory_mapped_file(mem_map):
         print line
 
 
-def assign_token_values(token_type, token_value, col_num, line_num, should_print=False):
+def assign_token_values(token_type,
+                        token_value,
+                        col_num,
+                        line_num,
+                        should_print=False):
     """
     Assigns the global token variables.
     
@@ -81,16 +90,17 @@ def assign_token_values(token_type, token_value, col_num, line_num, should_print
     """
     global COL_NUM
     global LINE_NUM
-    global TOKEN_VALUE   
+    global TOKEN_VALUE
     global TOKEN_TYPE
 
     TOKEN_VALUE = token_value
     TOKEN_TYPE = token_type
     COL_NUM = col_num
     LINE_NUM = line_num
-    
     if should_print:
         print (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
+
+    return (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
 
 
 if __name__ == '__main__':

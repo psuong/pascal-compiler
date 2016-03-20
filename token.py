@@ -7,7 +7,7 @@ def tk_keyword_setup():
         keyword_dict = {}
         with open('keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
-                keyword_dict[line.rstrip()] = 'TK_%s' % (line)
+                keyword_dict[line.rstrip()] = 'TK_%s' % (line.upper().rstrip())
         return keyword_dict
 
 
