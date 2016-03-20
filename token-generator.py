@@ -41,7 +41,8 @@ def scan_pascal_file(mem_map):
 
     for char in mem_map:
         col_num += 1
-        # Builds the word in order to check if it is a keyword.
+        # While the scanner scans a letter continuously append it to the
+        # `word` variable.
         if char.isalpha():
             word += char
         elif char is ' ':
@@ -57,22 +58,18 @@ def scan_pascal_file(mem_map):
         elif char == '\n':
             col_num = 0
             line_num += 1
-            # print 'Col: %i, Line: %i' % (GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
+        # Case: If the char is one of the special chars (operators),
+        # then return the tokens
         elif char in token.TK_Operators.keys():
             assign_token_values(token.TK_Operators[char],
                                 char, col_num,
                                 line_num,
                                 True)
-
-
-def print_memory_mapped_file(mem_map):
-    """
-    Prints the memory_mapped_file.
-
-    :param mem_map: mmap
-    """
-    for line in iter(mem_map.readline, ''):
-        print line
+        elif char is '\'':
+            # Reset the word
+            word = ''
+            # TODO: Check case string.
+            pass
 
 
 def assign_token_values(token_type,
@@ -82,7 +79,6 @@ def assign_token_values(token_type,
                         should_print=False):
     """
     Assigns the global token variables.
-    
     :param token_type: The type of token it is based on the Token class.
     :param token_value: The value of the token associated with the token_type.
     :param should_print: bool; Should the function print the tuple?
@@ -101,6 +97,16 @@ def assign_token_values(token_type,
         print (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
 
     return (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
+
+
+def print_memory_mapped_file(mem_map):
+    """
+    Prints the memory_mapped_file.
+
+    :param mem_map: mmap
+    """
+    for line in iter(mem_map.readline, ''):
+        print line
 
 
 if __name__ == '__main__':
