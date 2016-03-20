@@ -8,6 +8,7 @@ GLOBAL_LINE_NUM = 0
 TOKEN_VALUE = None
 TOKEN_TYPE = None
 
+
 def open_pascal_file():
     """
     Opens the pascal file and loads the pascal file into memory.
@@ -29,14 +30,12 @@ def scan_pascal_file(mem_map):
     """
     # TODO: Return a token type
     token = Token()
-    
     # Set up the token object
     token.TK_Keywords = tk_keyword_setup()
 
-    # TODO: Do logic processing on each word parsed out of the pascal file.
-    character_list = 'abcdefghjklmnopqrstuvwxyz'
-    # TODO: Complete the list of special characters
     special_characters = '();.'
+
+    # Set of global variables to access
 
     global GLOBAL_COL_NUM
     global GLOBAL_LINE_NUM
@@ -47,19 +46,22 @@ def scan_pascal_file(mem_map):
     word = ''
     for char in mem_map:
         GLOBAL_COL_NUM += 1
+        # Builds the word in order to check if it is a keyword.
         if char.isalpha():
             word += char
         elif char is ' ':
-            print '%s | Line: %s | Col: %s' % (word, GLOBAL_LINE_NUM, GLOBAL_COL_NUM - len(word))
+            if word in token.TK_Keywords.keys():
+                print '%s, %s, %s, %s' % (word, token.TK_Keywords[word], GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
+            # Reset the word
             word = ''
+        # Case: If the char is a newline char, then reset the column no.
+        # and increment the line no.
         elif char == '\n':
             GLOBAL_COL_NUM = 0
             GLOBAL_LINE_NUM += 1
-            print '%s | Line: %s | Col: %s' % (word, GLOBAL_LINE_NUM, GLOBAL_COL_NUM - len(word))
-            word = ''
+            # print 'Col: %i, Line: %i' % (GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
         elif char in special_characters:
-            print '%s | Line: %s | Col: %s' % (char, GLOBAL_LINE_NUM, GLOBAL_COL_NUM)
-            word = ''
+            print '%s, %s, %s' % (char, GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
 
 
 def print_memory_mapped_file(mem_map):
@@ -74,4 +76,3 @@ def print_memory_mapped_file(mem_map):
 
 if __name__ == '__main__':
     scan_pascal_file(open_pascal_file())
-    # print_memory_mapped_file(open_pascal_file())
