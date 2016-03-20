@@ -3,8 +3,8 @@ from mmap import mmap
 from token import tk_keyword_setup, Token
 
 # Global variables to pass into the other parts of the compiler
-GLOBAL_COL_NUM = 0
-GLOBAL_LINE_NUM = 0
+COL_NUM = 0
+LINE_NUM = 0
 TOKEN_VALUE = None
 TOKEN_TYPE = None
 
@@ -33,35 +33,31 @@ def scan_pascal_file(mem_map):
     # Set up the token object
     token.TK_Keywords = tk_keyword_setup()
 
-    special_characters = '();.'
-
-    # Set of global variables to access
-
-    global GLOBAL_COL_NUM
-    global GLOBAL_LINE_NUM
-    global TOKEN_VALUE
-    global TOKEN_TYPE
+    # Local variables for line number
+    col_num = 0
+    line_num = 0
 
     # Variable below allows building a word
     word = ''
+
     for char in mem_map:
-        GLOBAL_COL_NUM += 1
+        col_num += 1
         # Builds the word in order to check if it is a keyword.
         if char.isalpha():
             word += char
         elif char is ' ':
             if word in token.TK_Keywords.keys():
-                print '%s, %s, %s, %s' % (word, token.TK_Keywords[word], GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
+                assign_token_values(token.TK_Keywords[word], word, col_num, line_num, True)
             # Reset the word
             word = ''
         # Case: If the char is a newline char, then reset the column no.
         # and increment the line no.
         elif char == '\n':
-            GLOBAL_COL_NUM = 0
-            GLOBAL_LINE_NUM += 1
+            col_num = 0
+            line_num += 1
             # print 'Col: %i, Line: %i' % (GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
-        elif char in special_characters:
-            print '%s, %s, %s' % (char, GLOBAL_COL_NUM, GLOBAL_LINE_NUM)
+        elif char in token.TK_Operators.keys():
+            assign_token_values(token.TK_Operators[char], char, col_num, line_num, True)
 
 
 def print_memory_mapped_file(mem_map):
@@ -72,6 +68,29 @@ def print_memory_mapped_file(mem_map):
     """
     for line in iter(mem_map.readline, ''):
         print line
+
+
+def assign_token_values(token_type, token_value, col_num, line_num, should_print=False):
+    """
+    Assigns the global token variables.
+    
+    :param token_type: The type of token it is based on the Token class.
+    :param token_value: The value of the token associated with the token_type.
+    :param should_print: bool; Should the function print the tuple?
+    :return: tuple
+    """
+    global COL_NUM
+    global LINE_NUM
+    global TOKEN_VALUE   
+    global TOKEN_TYPE
+
+    TOKEN_VALUE = token_value
+    TOKEN_TYPE = token_type
+    COL_NUM = col_num
+    LINE_NUM = line_num
+    
+    if should_print:
+        print (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
 
 
 if __name__ == '__main__':
