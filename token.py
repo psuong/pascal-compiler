@@ -12,7 +12,7 @@ def tk_keyword_setup():
 
 
 class Token:
-   def __init__(self):
+    def __init__(self):
         self.TK_Operators = {
             '(': 'TK_OPEN_PARENTH',
             ')': 'TK_CLOSE_PARENTH',
@@ -29,3 +29,6 @@ class Token:
             ':=': 'TK_ASSIGNMENT'
         }
         self.TK_Keywords = None
+        self.TK_File = {
+            'EOF': 'TK_EOF'
+        }

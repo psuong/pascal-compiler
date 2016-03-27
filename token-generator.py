@@ -36,6 +36,8 @@ def scan_pascal_file(mem_map):
     col_num = 0
     line_num = 0
 
+    case_string = False
+
     # Variable below allows building a word
     word = ''
 
@@ -45,7 +47,7 @@ def scan_pascal_file(mem_map):
         # `word` variable.
         if char.isalpha():
             word += char
-        elif char is ' ':
+        elif char is ' ' and not case_string:
             if word in token.TK_Keywords.keys():
                 assign_token_values(token.TK_Keywords[word],
                                     word, col_num,
@@ -61,15 +63,32 @@ def scan_pascal_file(mem_map):
         # Case: If the char is one of the special chars (operators),
         # then return the tokens
         elif char in token.TK_Operators.keys():
+            if word in token.TK_Keywords.keys():
+                assign_token_values(token.TK_Keywords[word],
+                                    word, col_num,
+                                    line_num,
+                                    True)
             assign_token_values(token.TK_Operators[char],
                                 char, col_num,
                                 line_num,
                                 True)
-        elif char is '\'':
-            # Reset the word
             word = ''
-            # TODO: Check case string.
-            pass
+        elif char == '\'' or char == '\"':
+            if case_string:
+                assign_token_values(token.TK_Keywords['string'],
+                                    word.strip(char),
+                                    col_num-len(word + char),
+                                    line_num,
+                                    True)
+                case_string=False
+            else:
+                word = ''
+                case_string = True
+    assign_token_values(token.TK_File['EOF'],
+                        'EOF',
+                        col_num,
+                        line_num,
+                        True)
 
 
 def assign_token_values(token_type,
