@@ -39,7 +39,7 @@ def scan_pascal_file(mem_map):
     col_num = 0
     line_num = 0
 
-    scanner_state = Enum('ScannerState', 'NORMAL_CASE STRING_CASE')
+    scanner_state = Enum('ScannerState', 'NORMAL_CASE STRING_CASE DIGIT_CASE')
     current_state = scanner_state.NORMAL_CASE
 
     # Variable below allows building a word
@@ -54,8 +54,9 @@ def scan_pascal_file(mem_map):
                 word += char
             elif char.isdigit():
                 word += char
+                current_state = scanner_state.DIGIT_CASE
             elif char is ' ':
-                if word in token.TK_Keywords.keys():
+                if word.upper() in token.TK_Keywords.keys():
                     assign_token_values(token.TK_Keywords[word],
                                         word,
                                         col_num,
@@ -65,14 +66,13 @@ def scan_pascal_file(mem_map):
             elif char is '\n':
                 col_num = 0
                 line_num += 1
-                if word in token.TK_Keywords.keys():
+                if word.upper() in token.TK_Keywords.keys():
                     assign_token_values(token.TK_Keywords[word],
                                         word,
                                         col_num,
                                         line_num,
                                         True)
                 word = ''
-
             elif char is ':':
                 if mem_map[index + 1] is '=':
                     index += 1
@@ -109,6 +109,8 @@ def scan_pascal_file(mem_map):
                                     True)
                 word = ''
                 current_state = scanner_state.NORMAL_CASE
+        elif current_state is scanner_state.DIGIT_CASE:
+            pass
 
     assign_token_values(token.TK_File['EOF'],
                         'EOF',

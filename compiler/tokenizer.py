@@ -22,6 +22,16 @@ class Token:
             'EOF': 'TK_EOF'
         }
         self.TK_Digit = 'TK_DIGIT'
+        self.TK_Datatypes= {
+            'string': 'TK_DATATYPE_STRING',
+            'real': 'TK_DATATYPE_REAL',
+            'integer': 'TK_DATATYPE_INTEGER',
+            'boolean': 'TK_DATATYPE_BOOLEAN',
+            'character': 'TK_DATATYPE_CHARACTER'
+        }
+        self.TK_declarations = {
+
+        }
 
     @property
     def tk_keyword_setup(self):
@@ -32,5 +42,5 @@ class Token:
         keyword_dict = {}
         with open('compiler/keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
-                keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper().rstrip())
+                keyword_dict[line.upper().rstrip()] = 'TK_KEYWORD_%s' % (line.upper().rstrip())
         return keyword_dict
