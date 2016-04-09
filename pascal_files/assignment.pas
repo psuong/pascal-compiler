@@ -1,8 +1,5 @@
 program assignment;
+    var x : integer;
 begin
-    var x := 20;
-    a := (8 * 2);
-    (* *)
-    {* *}
-    //
+    x := 20;
 end.

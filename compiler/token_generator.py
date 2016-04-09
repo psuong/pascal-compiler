@@ -1,6 +1,6 @@
 from sys import argv
 from mmap import mmap
-from tokenizer import tk_keyword_setup, Token
+from tokenizer import Token
 from aenum import Enum
 
 # Global variables to pass into the other parts of the compiler
@@ -31,7 +31,7 @@ def scan_pascal_file(mem_map):
     """
     token = Token()
     # Set up the token object
-    token.TK_Keywords = tk_keyword_setup()
+    token.TK_Keywords = token.tk_keyword_setup()
 
     # Local variables for line number
     col_num = 0
@@ -51,6 +51,8 @@ def scan_pascal_file(mem_map):
             word += char
         if char.isalpha() and current_state is not scanner_state.STRING_CASE:
             word += char
+        elif char.isdigit() and current_state is not scanner_state.STRING_CASE:
+            word += char
         elif char is ' ' and current_state is not scanner_state.STRING_CASE:
             if word in token.TK_Keywords.keys():
                 assign_token_values(token.TK_Keywords[word],
@@ -69,6 +71,11 @@ def scan_pascal_file(mem_map):
         elif char in token.TK_Operators.keys() and current_state is not scanner_state.ASSIGNMENT_CASE:
             if word in token.TK_Keywords.keys():
                 assign_token_values(token.TK_Keywords[word],
+                                    word, col_num,
+                                    line_num,
+                                    True)
+            elif word.isdigit() and current_state is not scanner_state.ASSIGNMENT_CASE:
+                assign_token_values(token.TK_Digit,
                                     word, col_num,
                                     line_num,
                                     True)
@@ -116,6 +123,8 @@ def assign_token_values(token_type,
                         should_print=False):
     """
     Assigns the global token variables.
+    :param line_num: The current row the iterator is at.
+    :param col_num: The current index the iterator is at.
     :param token_type: The type of token it is based on the Token class.
     :param token_value: The value of the token associated with the token_type.
     :param should_print: bool; Should the function print the tuple?
