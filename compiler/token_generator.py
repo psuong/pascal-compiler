@@ -37,9 +37,6 @@ def scan_pascal_file(mem_map):
     col_num = 0
     line_num = 0
 
-    case_string = False
-    case_assignment = False
-
     scanner_state = Enum('ScannerState', 'STRING_CASE ASSIGNMENT_CASE')
     current_state = None
 
@@ -50,9 +47,11 @@ def scan_pascal_file(mem_map):
         col_num += 1
         # While the scanner scans a letter continuously append it to the
         # `word` variable.
-        if char.isalpha():
+        if current_state is scanner_state.STRING_CASE:
             word += char
-        elif char is ' ' and not case_string:
+        if char.isalpha() and current_state is not scanner_state.STRING_CASE:
+            word += char
+        elif char is ' ' and current_state is not scanner_state.STRING_CASE:
             if word in token.TK_Keywords.keys():
                 assign_token_values(token.TK_Keywords[word],
                                     word, col_num,
@@ -67,7 +66,7 @@ def scan_pascal_file(mem_map):
             line_num += 1
         # Case: If the char is one of the special chars (operators),
         # then return the tokens
-        elif char in token.TK_Operators.keys():
+        elif char in token.TK_Operators.keys() and current_state is not scanner_state.ASSIGNMENT_CASE:
             if word in token.TK_Keywords.keys():
                 assign_token_values(token.TK_Keywords[word],
                                     word, col_num,
@@ -79,28 +78,30 @@ def scan_pascal_file(mem_map):
                                 True)
             word = ''
         elif char == '\'' or char == '\"':
-            if case_string:
+            if current_state is scanner_state.STRING_CASE:
                 assign_token_values(token.TK_Keywords['string'],
                                     word.strip(char),
                                     col_num - len(word + char),
                                     line_num,
                                     True)
-                case_string = False
+                current_state = None
             else:
                 word = ''
-                case_string = True
-        elif char == ':' or case_assignment:
-            # Append the colon to an empty string
+                current_state = scanner_state.STRING_CASE
+        elif char is ':' and current_state is not scanner_state.STRING_CASE:
+            if current_state is not scanner_state.ASSIGNMENT_CASE:
+                current_state = scanner_state.ASSIGNMENT_CASE
             word = '' + char
-            # If the state is in case assignment then append the next char which should be an = sign
-        elif char == '=' and word is ':':
+        elif current_state is scanner_state.ASSIGNMENT_CASE:
             word += char
-            assign_token_values(token.TK_Operators[word],
-                                word,
-                                col_num,
-                                line_num,
-                                True)
-            case_assignment = False
+            if word in token.TK_Operators.keys():
+                assign_token_values(token.TK_Operators[word],
+                                    word,
+                                    col_num,
+                                    line_num,
+                                    True)
+            current_state = None
+            word = ''
     assign_token_values(token.TK_File['EOF'],
                         'EOF',
                         col_num,
