@@ -13,3 +13,6 @@
 
 # ImDone Plugin
 .imdone/
+
+# Venv
+/[Vv]env
