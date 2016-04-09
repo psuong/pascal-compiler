@@ -1,6 +1,7 @@
 from sys import argv
 from mmap import mmap
-from token import tk_keyword_setup, Token
+from tokenizer import tk_keyword_setup, Token
+from aenum import Enum
 
 # Global variables to pass into the other parts of the compiler
 COL_NUM = 0
@@ -37,6 +38,10 @@ def scan_pascal_file(mem_map):
     line_num = 0
 
     case_string = False
+    case_assignment = False
+
+    scanner_state = Enum('ScannerState', 'STRING_CASE ASSIGNMENT_CASE')
+    current_state = None
 
     # Variable below allows building a word
     word = ''
@@ -77,13 +82,25 @@ def scan_pascal_file(mem_map):
             if case_string:
                 assign_token_values(token.TK_Keywords['string'],
                                     word.strip(char),
-                                    col_num-len(word + char),
+                                    col_num - len(word + char),
                                     line_num,
                                     True)
-                case_string=False
+                case_string = False
             else:
                 word = ''
                 case_string = True
+        elif char == ':' or case_assignment:
+            # Append the colon to an empty string
+            word = '' + char
+            # If the state is in case assignment then append the next char which should be an = sign
+        elif char == '=' and word is ':':
+            word += char
+            assign_token_values(token.TK_Operators[word],
+                                word,
+                                col_num,
+                                line_num,
+                                True)
+            case_assignment = False
     assign_token_values(token.TK_File['EOF'],
                         'EOF',
                         col_num,
@@ -115,7 +132,7 @@ def assign_token_values(token_type,
     if should_print:
         print (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
 
-    return (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
+    return TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM
 
 
 def print_memory_mapped_file(mem_map):
