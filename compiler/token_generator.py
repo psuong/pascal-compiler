@@ -9,6 +9,8 @@ LINE_NUM = 0
 TOKEN_VALUE = None
 TOKEN_TYPE = None
 
+TOKEN_LIST = []
+
 
 def open_pascal_file():
     """
@@ -31,84 +33,83 @@ def scan_pascal_file(mem_map):
     """
     token = Token()
     # Set up the token object
-    token.TK_Keywords = token.tk_keyword_setup()
+    token.TK_Keywords = token.tk_keyword_setup
 
     # Local variables for line number
     col_num = 0
     line_num = 0
 
-    scanner_state = Enum('ScannerState', 'STRING_CASE ASSIGNMENT_CASE')
-    current_state = None
+    scanner_state = Enum('ScannerState', 'NORMAL_CASE STRING_CASE')
+    current_state = scanner_state.NORMAL_CASE
 
     # Variable below allows building a word
     word = ''
 
-    for char in mem_map:
+    for index in range(0, len(mem_map) - 1):
         col_num += 1
-        # While the scanner scans a letter continuously append it to the
-        # `word` variable.
-        if current_state is scanner_state.STRING_CASE:
-            word += char
-        if char.isalpha() and current_state is not scanner_state.STRING_CASE:
-            word += char
-        elif char.isdigit() and current_state is not scanner_state.STRING_CASE:
-            word += char
-        elif char is ' ' and current_state is not scanner_state.STRING_CASE:
-            if word in token.TK_Keywords.keys():
-                assign_token_values(token.TK_Keywords[word],
-                                    word, col_num,
-                                    line_num,
-                                    True)
-            # Reset the word
-            word = ''
-        # Case: If the char is a newline char, then reset the column no.
-        # and increment the line no.
-        elif char == '\n':
-            col_num = 0
-            line_num += 1
-        # Case: If the char is one of the special chars (operators),
-        # then return the tokens
-        elif char in token.TK_Operators.keys() and current_state is not scanner_state.ASSIGNMENT_CASE:
-            if word in token.TK_Keywords.keys():
-                assign_token_values(token.TK_Keywords[word],
-                                    word, col_num,
-                                    line_num,
-                                    True)
-            elif word.isdigit() and current_state is not scanner_state.ASSIGNMENT_CASE:
-                assign_token_values(token.TK_Digit,
-                                    word, col_num,
-                                    line_num,
-                                    True)
-            assign_token_values(token.TK_Operators[char],
-                                char, col_num,
-                                line_num,
-                                True)
-            word = ''
-        elif char == '\'' or char == '\"':
-            if current_state is scanner_state.STRING_CASE:
-                assign_token_values(token.TK_Keywords['string'],
-                                    word.strip(char),
-                                    col_num - len(word + char),
-                                    line_num,
-                                    True)
-                current_state = None
-            else:
+        char = mem_map[index]
+
+        if current_state is scanner_state.NORMAL_CASE:
+            if char.isalpha():
+                word += char
+            elif char.isdigit():
+                word += char
+            elif char is ' ':
+                if word in token.TK_Keywords.keys():
+                    assign_token_values(token.TK_Keywords[word],
+                                        word,
+                                        col_num,
+                                        line_num,
+                                        True)
                 word = ''
+            elif char is '\n':
+                col_num = 0
+                line_num += 1
+                if word in token.TK_Keywords.keys():
+                    assign_token_values(token.TK_Keywords[word],
+                                        word,
+                                        col_num,
+                                        line_num,
+                                        True)
+                word = ''
+
+            elif char is ':':
+                if mem_map[index + 1] is '=':
+                    index += 1
+                    word = '' + char + mem_map[index]
+                    assign_token_values(token.TK_Operators[word],
+                                        word,
+                                        col_num,
+                                        line_num,
+                                        True)
+                word = ''
+            elif char in token.TK_Operators.keys():
+                if word in token.TK_Keywords.keys():
+                    assign_token_values(token.TK_Keywords[word],
+                                        word,
+                                        col_num,
+                                        line_num,
+                                        True)
+                assign_token_values(token.TK_Operators[char],
+                                    char,
+                                    col_num,
+                                    line_num,
+                                    True)
+                word = ''
+            elif char == '\'' or char == '\"':
                 current_state = scanner_state.STRING_CASE
-        elif char is ':' and current_state is not scanner_state.STRING_CASE:
-            if current_state is not scanner_state.ASSIGNMENT_CASE:
-                current_state = scanner_state.ASSIGNMENT_CASE
-            word = '' + char
-        elif current_state is scanner_state.ASSIGNMENT_CASE:
+                word = '' + char
+        elif current_state is scanner_state.STRING_CASE:
             word += char
-            if word in token.TK_Operators.keys():
-                assign_token_values(token.TK_Operators[word],
+            if char == '\'' or char == '\"':
+                assign_token_values(token.TK_Keywords['string'],
                                     word,
                                     col_num,
                                     line_num,
                                     True)
-            current_state = None
-            word = ''
+                word = ''
+                current_state = scanner_state.NORMAL_CASE
+
     assign_token_values(token.TK_File['EOF'],
                         'EOF',
                         col_num,
@@ -134,6 +135,7 @@ def assign_token_values(token_type,
     global LINE_NUM
     global TOKEN_VALUE
     global TOKEN_TYPE
+    global TOKEN_LIST
 
     TOKEN_VALUE = token_value
     TOKEN_TYPE = token_type
@@ -142,6 +144,8 @@ def assign_token_values(token_type,
     if should_print:
         print (TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM)
 
+    # Add all the tuples to a universal list
+    TOKEN_LIST.append((TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM))
     return TOKEN_TYPE, TOKEN_VALUE, COL_NUM, LINE_NUM
 
 

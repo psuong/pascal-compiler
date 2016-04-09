@@ -23,6 +23,7 @@ class Token:
         }
         self.TK_Digit = 'TK_DIGIT'
 
+    @property
     def tk_keyword_setup(self):
         """
         Generates a dictionary of keywords found in Pascal.
