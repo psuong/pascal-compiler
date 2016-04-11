@@ -8,6 +8,9 @@
 *.o
 /helloworld
 
+# Extra folders
+/code_examples
+
 # Jetbrains Folder and Files
 *.idea/
 
