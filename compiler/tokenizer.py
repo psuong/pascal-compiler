@@ -1,5 +1,6 @@
 from mmap import mmap
 from sys import argv
+from aenum import enum
 
 
 class Token:
@@ -62,5 +63,13 @@ class FileManager:
 
 class Scanner:
     def __init__(self):
-        memory_mapped_file = None
-    pass
+        self.memory_mapped_file = None
+        self.current_state = None
+        self.word = ''
+        self.scanner_states = enum('NORMAL_CASE', 'STRING_CASE', 'DIGIT_CASE', 'LETTER_CASE', 'COMMENT_CASE')
+
+    def read_mem_map(self):
+        for index in range(0, len(self.memory_mapped_file) - 1):
+            char = self.memory_mapped_file[index] # Assign the char at this position to a variable
+            # TODO: Call the cases and check the states.
+        pass
