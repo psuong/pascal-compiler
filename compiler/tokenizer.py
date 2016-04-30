@@ -66,6 +66,7 @@ class Scanner:
     def __init__(self):
         self.memory_mapped_file = None
         self.current_state = None
+        self.delimiter_chars = ' \n\t'
         self.word = ''
         self.scanner_state = Enum('ScannerStates', 'letter digit')
 
@@ -76,21 +77,10 @@ class Scanner:
         """
         self.current_state = self.get_initial_state(self.memory_mapped_file[0])
 
-        for index in range(0, len(self.memory_mapped_file) + 1):
-            # Assign the index of he memory mapped file to a variable for ease
+        for index in range(0, len(self.memory_mapped_file)):
             char = self.memory_mapped_file[index]
-
-            # TODO: Letter Case: Keep adding a letter to the word when a letter is scanned
-            if char.isalpha():
-                self.word += char
-            # TODO: Digit Case: Keep adding a number when a # is being read.
-            # TODO: Digit case: Check for a real/floating point number.
-            elif char.isdigit():
-                self.word += char
-        # TODO: Read through the memory mapped file and parse each "word"
-        # TODO: String Case: Ignore until a string closer is read.
-        # TODO: Comment Case: Ignore until end of line or a comment closer is read.
-        # TODO: Delimiter case: Check if the word exists in any of the tokens.
+            if self.current_state is self.scanner_state.letter:
+                self.read_letter(char)
 
     def get_initial_state(self, char):
         """
@@ -104,7 +94,35 @@ class Scanner:
         elif initial_char.isdigit():
             return self.scanner_state.digit
 
+    def get_next_state(self, index):
+        """
+        Scans the next character in the file and determines
+        what the next state should be in the state machine.
+        :param index: int
+        :return: ScannerStates
+        """
+        next_char = self.memory_mapped_file[index + 1]
+        if next_char.isalpha():
+            return self.scanner_state.letter
+        elif next_char.isdigit():
+            return self.scanner_state.digit
+
     def read_letter(self, char):
+        """
+        Appends a character to a word and checks the state.
+        :param char: string
+        :return: None
+        """
         self.word += char
-        if not char.isalpha():
-            pass
+        if char.isalpha():
+            self.current_state = self.scanner_state.letter
+        elif char.isdigit():
+            self.current_state = self.scanner_state.digit
+        elif char in self.delimiter_chars:
+            word = self.word
+            self.print_word(word)
+            self.word = ''
+
+    @staticmethod
+    def print_word(self, word):
+        print word
