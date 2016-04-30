@@ -1,6 +1,6 @@
 from mmap import mmap
 from sys import argv
-from aenum import enum
+from aenum import Enum
 
 
 class Token:
@@ -67,13 +67,44 @@ class Scanner:
         self.memory_mapped_file = None
         self.current_state = None
         self.word = ''
-        self.scanner_states = enum('NORMAL_CASE', 'STRING_CASE', 'DIGIT_CASE', 'LETTER_CASE', 'COMMENT_CASE')
+        self.scanner_state = Enum('ScannerStates', 'letter digit')
 
+    def read_memory_file(self):
+        """
+        Reads the memory_mapped_file and determines what tokens to return based on the word.
+        :return: None
+        """
+        self.current_state = self.get_initial_state(self.memory_mapped_file[0])
+
+        for index in range(0, len(self.memory_mapped_file) + 1):
+            # Assign the index of he memory mapped file to a variable for ease
+            char = self.memory_mapped_file[index]
+
+            # TODO: Letter Case: Keep adding a letter to the word when a letter is scanned
+            if char.isalpha():
+                self.word += char
+            # TODO: Digit Case: Keep adding a number when a # is being read.
+            # TODO: Digit case: Check for a real/floating point number.
+            elif char.isdigit():
+                self.word += char
         # TODO: Read through the memory mapped file and parse each "word"
-        # TODO: Letter Case: Keep adding a letter to the word when a letter is scanned
-        # TODO: Digit Case: Keep adding a number when a # is being read.
-        # TODO: Digit case: Check for a real/floating point number.
         # TODO: String Case: Ignore until a string closer is read.
         # TODO: Comment Case: Ignore until end of line or a comment closer is read.
         # TODO: Delimiter case: Check if the word exists in any of the tokens.
 
+    def get_initial_state(self, char):
+        """
+        Gets the first initial state of the pascal file.
+        :param char: string
+        :return: ScannerState
+        """
+        initial_char = self.memory_mapped_file[0]
+        if initial_char.isalpha():
+            return self.scanner_state.letter
+        elif initial_char.isdigit():
+            return self.scanner_state.digit
+
+    def read_letter(self, char):
+        self.word += char
+        if not char.isalpha():
+            pass
