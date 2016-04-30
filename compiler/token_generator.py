@@ -110,7 +110,14 @@ def scan_pascal_file(mem_map):
                 word = ''
                 current_state = scanner_state.NORMAL_CASE
         elif current_state is scanner_state.DIGIT_CASE:
-            break
+            word += char
+            if not char.isdigit() and word.isdigit():
+                assign_token_values(token.TK_Digit['integer'],
+                                    word,
+                                    col_num,
+                                    line_num,
+                                    True)
+            word = ''
     assign_token_values(token.TK_File['EOF'],
                         'EOF',
                         col_num,
