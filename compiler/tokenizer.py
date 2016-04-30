@@ -55,7 +55,8 @@ class FileManager:
     def __init__(self):
         self.pascal_file = self.open_pascal_file()
 
-    def open_pascal_file(self):
+    @staticmethod
+    def open_pascal_file():
         with open(argv[1], 'r + b') as pascal_file:
             memory_mapped_file = mmap(pascal_file.fileno(), 0)
         return memory_mapped_file
@@ -68,8 +69,11 @@ class Scanner:
         self.word = ''
         self.scanner_states = enum('NORMAL_CASE', 'STRING_CASE', 'DIGIT_CASE', 'LETTER_CASE', 'COMMENT_CASE')
 
-    def read_mem_map(self):
-        for index in range(0, len(self.memory_mapped_file) - 1):
-            char = self.memory_mapped_file[index] # Assign the char at this position to a variable
-            # TODO: Call the cases and check the states.
-        pass
+        # TODO: Read through the memory mapped file and parse each "word"
+        # TODO: Letter Case: Keep adding a letter to the word when a letter is scanned
+        # TODO: Digit Case: Keep adding a number when a # is being read.
+        # TODO: Digit case: Check for a real/floating point number.
+        # TODO: String Case: Ignore until a string closer is read.
+        # TODO: Comment Case: Ignore until end of line or a comment closer is read.
+        # TODO: Delimiter case: Check if the word exists in any of the tokens.
+
