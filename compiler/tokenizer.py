@@ -3,6 +3,9 @@ from sys import argv
 from aenum import Enum
 
 
+TOKEN_LIST = []
+
+
 class Token:
     def __init__(self):
         self.TK_OPERATORS = {
@@ -70,6 +73,7 @@ class Scanner:
         self.special_chars = ',./<>?;\'\\[]{}!@#$%^&*()-_+='
         self.word = ''
         self.scanner_state = Enum('ScannerStates', 'letter digit operator')
+        self.token = Token()
 
     def read_memory_file(self):
         """
@@ -115,21 +119,36 @@ class Scanner:
         :param index: int
         :return: None
         """
-        self.word += char
         if char.isalpha():
+            self.word += char
             self.current_state = self.scanner_state.letter
         elif char.isdigit():
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
-            word = self.word
+            self.get_keyword_token(self.word)
+            print TOKEN_LIST
             self.word = char
             self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
             word = self.word
-            self.print_word(word)
             self.word = ''
             self.current_state = self.get_next_state(index)
+            TOKEN_LIST.append(self.get_keyword_token(word))
+            # TODO: Remove the print statements for debugging
+            print self.get_keyword_token(word)
+            print 'Delimiter -> Next State: %s' % self.current_state
+
+    # TODO: Move this function to the Token() class.
+    def get_keyword_token(self, word):
+        """
+        Checks if the word exists in the list of keywords for a given
+        Pascal file.
+        :param word: string
+        :return: Token
+        """
+        if word in self.token.TK_KEYWORDS.keys():
+            return self.token.TK_KEYWORDS[word]
 
     @staticmethod
     def print_word(word):
