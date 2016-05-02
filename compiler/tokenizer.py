@@ -67,8 +67,9 @@ class Scanner:
         self.memory_mapped_file = None
         self.current_state = None
         self.delimiter_chars = ' \n\t'
+        self.special_chars = ',./<>?;\'\\[]{}!@#$%^&*()-_+='
         self.word = ''
-        self.scanner_state = Enum('ScannerStates', 'letter digit')
+        self.scanner_state = Enum('ScannerStates', 'letter digit operator')
 
     def read_memory_file(self):
         """
@@ -80,7 +81,7 @@ class Scanner:
         for index in range(0, len(self.memory_mapped_file)):
             char = self.memory_mapped_file[index]
             if self.current_state is self.scanner_state.letter:
-                self.read_letter(char)
+                self.read_letter(char, index)
 
     def get_initial_state(self, char):
         """
@@ -107,22 +108,34 @@ class Scanner:
         elif next_char.isdigit():
             return self.scanner_state.digit
 
-    def read_letter(self, char):
+    def read_letter(self, char, index):
         """
         Appends a character to a word and checks the state.
         :param char: string
+        :param index: int
         :return: None
         """
         self.word += char
         if char.isalpha():
             self.current_state = self.scanner_state.letter
         elif char.isdigit():
+            self.word += char
             self.current_state = self.scanner_state.digit
+        elif char in self.special_chars:
+            word = self.word
+            self.word = char
+            self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
             word = self.word
             self.print_word(word)
             self.word = ''
+            self.current_state = self.get_next_state(index)
 
     @staticmethod
-    def print_word(self, word):
+    def print_word(word):
+        """
+        Static method which prints the given word.
+        :param word:
+        :return:
+        """
         print word
