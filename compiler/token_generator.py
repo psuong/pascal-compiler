@@ -117,7 +117,20 @@ def scan_pascal_file(mem_map):
                                     col_num,
                                     line_num,
                                     True)
-            word = ''
+                word = ''
+                current_state = scanner_state.DIGIT_CASE
+            elif not char.isdigit() and '.' in word:
+                assign_token_values(token.TK_Digit['.'],
+                                    word,
+                                    col_num,
+                                    line_num,
+                                    True)
+                word = ''
+                current_state = scanner_state.DIGIT_CASE
+            elif char.isalpha():
+                word = char
+                current_state = scanner_state.NORMAL_CASE
+
     assign_token_values(token.TK_File['EOF'],
                         'EOF',
                         col_num,
