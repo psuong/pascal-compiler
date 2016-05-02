@@ -2,7 +2,6 @@ from mmap import mmap
 from sys import argv
 from aenum import Enum
 
-
 TOKEN_LIST = []
 
 
@@ -30,7 +29,7 @@ class Token:
         self.TK_KEYWORDS = self.keyword_setup()
         self.TK_FILE = 'TK_EOF'
         self.TK_DIGIT = {
-            '.': 'TK_REAL_LITERAL',
+            'real': 'TK_REAL_LITERAL',
             'integer': 'TK_INTEGER_LITERAL'
         }
         self.TK_DATATYPES = {
@@ -47,11 +46,26 @@ class Token:
 
     @staticmethod
     def keyword_setup():
+        """
+        Opens the keywords.txt file and reads it to create the dictionary containing all of
+        the pascal keywords.
+        :return: None
+        """
         keyword_dict = {}
         with open('compiler/keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
                 keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper())
         return keyword_dict
+
+    def get_token(self, word):
+        """
+        Returns a token type based on the word being parsed.
+        :param word: string
+        :return: Token
+        """
+        # TODO: Finish the rest of the token retrieving.
+        if self.TK_DATATYPES.get(word) is not None:
+            return self.TK_DATATYPES[word]
 
 
 class FileManager:
