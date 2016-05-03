@@ -106,6 +106,8 @@ class Scanner:
             char = self.memory_mapped_file[index]
             if self.current_state is self.scanner_state.letter:
                 self.read_letter(char, index)
+            elif self.current_state is self.scanner_state.operator:
+                self.read_operator(char, index)
 
     def get_initial_state(self, char):
         """
@@ -152,13 +154,9 @@ class Scanner:
             self.word = char
             self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
-            word = self.word
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
-            TOKEN_LIST.append((self.token.get_token(word), word))
-            # TODO: Remove the print statements for debugging
-            print self.get_keyword_token(word)
-            print 'Delimiter -> Next State: %s' % self.current_state
 
     def read_operator(self, char, index):
         """
@@ -179,20 +177,9 @@ class Scanner:
             self.word = char
             self.current_state = self.get_next_state(index)
         elif char in self.delimiter_chars:
-            self.token.get_token(self.word)
-
-
-
-    # TODO: Move this function to the Token() class.
-    def get_keyword_token(self, word):
-        """
-        Checks if the word exists in the list of keywords for a given
-        Pascal file.
-        :param word: string
-        :return: Token
-        """
-        if word in self.token.TK_KEYWORDS.keys():
-            return self.token.TK_KEYWORDS[word]
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            self.word = ''
+            self.current_state = self.get_next_state(index)
 
     @staticmethod
     def print_word(word):
