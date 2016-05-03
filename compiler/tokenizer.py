@@ -66,6 +66,10 @@ class Token:
         # TODO: Finish the rest of the token retrieving.
         if self.TK_DATATYPES.get(word) is not None:
             return self.TK_DATATYPES[word]
+        elif self.TK_KEYWORDS.get(word) is not None:
+            return self.TK_KEYWORDS[word]
+        elif self.TK_OPERATORS.get(word) is not None:
+            return self.TK_OPERATORS[word]
 
 
 class FileManager:
@@ -140,6 +144,7 @@ class Scanner:
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
+            # TODO: Use the Token get_token() function instead
             self.get_keyword_token(self.word)
             print TOKEN_LIST
             self.word = char
@@ -152,6 +157,15 @@ class Scanner:
             # TODO: Remove the print statements for debugging
             print self.get_keyword_token(word)
             print 'Delimiter -> Next State: %s' % self.current_state
+
+    def read_operator(self, char, index):
+        """
+        Appends a character to a word and checks the state.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        pass
 
     # TODO: Move this function to the Token() class.
     def get_keyword_token(self, word):
