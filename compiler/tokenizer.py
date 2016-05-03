@@ -70,6 +70,8 @@ class Token:
             return self.TK_KEYWORDS[word]
         elif self.TK_OPERATORS.get(word) is not None:
             return self.TK_OPERATORS[word]
+        else:
+            return self.TK_ID
 
 
 class FileManager:
@@ -145,7 +147,7 @@ class Scanner:
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
             # TODO: Use the Token get_token() function instead
-            self.get_keyword_token(self.word)
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             print TOKEN_LIST
             self.word = char
             self.current_state = self.scanner_state.operator
@@ -153,7 +155,7 @@ class Scanner:
             word = self.word
             self.word = ''
             self.current_state = self.get_next_state(index)
-            TOKEN_LIST.append(self.get_keyword_token(word))
+            TOKEN_LIST.append((self.token.get_token(word), word))
             # TODO: Remove the print statements for debugging
             print self.get_keyword_token(word)
             print 'Delimiter -> Next State: %s' % self.current_state
@@ -165,7 +167,21 @@ class Scanner:
         :param index: int
         :return: None
         """
-        pass
+        if char in self.special_chars:
+            self.word += char
+            self.current_state = self.scanner_state.operator
+        elif char.isdigit():
+            self.token.get_token(self.word)
+            self.word = ''
+            self.current_state = self.scanner_state.letter
+        elif char.isdigit():
+            self.token.get_token(self.word)
+            self.word = char
+            self.current_state = self.get_next_state(index)
+        elif char in self.delimiter_chars:
+            self.token.get_token(self.word)
+
+
 
     # TODO: Move this function to the Token() class.
     def get_keyword_token(self, word):
