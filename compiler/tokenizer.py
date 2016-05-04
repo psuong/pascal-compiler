@@ -92,7 +92,7 @@ class Scanner:
         self.delimiter_chars = ' \n\t'
         self.special_chars = ',./<>?;\'\\[]{}!@#$%^&*()-_+='
         self.word = ''
-        self.scanner_state = Enum('ScannerStates', 'letter digit operator')
+        self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter')
         self.token = Token()
 
     def read_memory_file(self):
@@ -108,6 +108,12 @@ class Scanner:
                 self.read_letter(char, index)
             elif self.current_state is self.scanner_state.operator:
                 self.read_operator(char, index)
+            elif self.current_state is self.scanner_state.delimiter:
+                self.read_delimiter(char, index)
+                pass
+
+        for each in TOKEN_LIST:
+            print each
 
     def get_initial_state(self, char):
         """
@@ -133,6 +139,8 @@ class Scanner:
             return self.scanner_state.letter
         elif next_char.isdigit():
             return self.scanner_state.digit
+        elif next_char in self.delimiter_chars:
+            return self.scanner_state.delimiter
 
     def read_letter(self, char, index):
         """
@@ -148,15 +156,15 @@ class Scanner:
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
-            # TODO: Use the Token get_token() function instead
             TOKEN_LIST.append((self.token.get_token(self.word), self.word))
-            print TOKEN_LIST
             self.word = char
             self.current_state = self.scanner_state.operator
+        # TODO: Fix the delimiter state
         elif char in self.delimiter_chars:
             TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
+            print 'Next State: %s' % self.get_next_state(index)
 
     def read_operator(self, char, index):
         """
@@ -179,6 +187,17 @@ class Scanner:
         elif char in self.delimiter_chars:
             TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = ''
+            self.current_state = self.get_next_state(index)
+
+    def read_delimiter(self, char, index):
+        """
+        Reads any kind of delimiter characters and updates the state.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        # Keep getting the next state until you get something other than a delimiter
+        if char in self.delimiter_chars:
             self.current_state = self.get_next_state(index)
 
     @staticmethod
