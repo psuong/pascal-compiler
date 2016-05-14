@@ -54,7 +54,7 @@ class Token:
         keyword_dict = {}
         with open('compiler/keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
-                keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper())
+                keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper().strip('\n'))
         return keyword_dict
 
     def get_token(self, word):
