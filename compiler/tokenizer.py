@@ -105,6 +105,8 @@ class Scanner:
             char = self.memory_mapped_file[index]
             if self.current_state is self.scanner_state.letter:
                 self.read_letter(char, index)
+            elif self.current_state is self.scanner_state.digit:
+                self.read_number(char, index)
             elif self.current_state is self.scanner_state.operator:
                 self.read_operator(char, index)
             elif self.current_state is self.scanner_state.delimiter:
@@ -180,20 +182,25 @@ class Scanner:
         :param index: int
         :return: None
         """
-        self.word += char
-        if char == '.' and char in self.special_chars:
+        if char.isdigit():
+            self.word += char
+        elif char == '.' and char in self.special_chars:
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char != '.' and char in self.special_chars:
             if '.' in self.word:
-                TOKEN_LIST.append(self.token.TK_DIGIT['real'], self.word)
-                self.word = ''
-                self.current_state = self.get_next_state(index)
+                TOKEN_LIST.append((self.token.TK_DIGIT['real'], self.word))
+                self.word = char
+                self.current_state = self.scanner_state.operator
             else:
-                TOKEN_LIST.append(self.token.TK_DIGIT['integer'], self.word)
-                self.word = ''
-                self.current_state = self.get_next_state(index)
-        pass
+                TOKEN_LIST.append((self.token.TK_DIGIT['integer'], self.word))
+                self.word = char
+                self.current_state = self.scanner_state.operator
+                # print 'State: %s \t Char: %s' % (self.current_state, self.memory_mapped_file[index + 1])
+        elif char.isalpha():
+            self.word += char
+            TOKEN_LIST.append((self.token.TK_ID, self.word))
+            self.current_state = self.get_next_state(index)
 
     def read_operator(self, char, index):
         """
@@ -214,7 +221,7 @@ class Scanner:
             self.word = ''
             self.current_state = self.scanner_state.letter
         elif char.isdigit():
-            self.token.get_token(self.word)
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.get_next_state(index)
         elif char in self.delimiter_chars:
@@ -244,9 +251,7 @@ class Scanner:
         if char == '\'' or char == '"':
             TOKEN_LIST.append((self.token.TK_STRING, self.word))
             self.word = ''
-            print self.current_state
             self.current_state = self.get_next_state(index)
-            # print 'Next State: %s \t Next Char: %s \t Current Char: %s' % (self.current_state, self.memory_mapped_file[index + 1], char)
 
     @staticmethod
     def print_word(word):
