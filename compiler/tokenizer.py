@@ -172,6 +172,16 @@ class Scanner:
             self.current_state = self.get_next_state(index)
             # print 'Next State: %s' % self.get_next_state(index)
 
+    def read_number(self, char, index):
+        """
+        Continues to read a number until until a seperate char is read. "." are
+        ignored.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        pass
+
     def read_operator(self, char, index):
         """
         Appends a character to a word and checks the state.
