@@ -180,6 +180,17 @@ class Scanner:
         :param index: int
         :return: None
         """
+        self.word += char
+        if char == '.' and char in self.special_chars:
+            self.word += char
+            self.current_state = self.scanner_state.digit
+        elif char != '.' and char in self.special_chars:
+            if '.' in self.word:
+                # TODO: Add a real number to the token list
+                pass
+            else:
+                # TODO: Add an integer to the token list
+                pass
         pass
 
     def read_operator(self, char, index):
