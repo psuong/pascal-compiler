@@ -90,9 +90,9 @@ class Scanner:
         self.memory_mapped_file = None
         self.current_state = None
         self.delimiter_chars = ' \n\t'
-        self.special_chars = ',./<>?;\'\\[]{}!@#$%^&*()-_+='
+        self.special_chars = ',./<>?;\[]{}!@#$%^&*()-_+='
         self.word = ''
-        self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter')
+        self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter string')
         self.token = Token()
 
     def read_memory_file(self):
@@ -110,7 +110,6 @@ class Scanner:
                 self.read_operator(char, index)
             elif self.current_state is self.scanner_state.delimiter:
                 self.read_delimiter(char, index)
-                pass
 
         for each in TOKEN_LIST:
             print each
@@ -178,8 +177,12 @@ class Scanner:
         if char in self.special_chars:
             self.word += char
             self.current_state = self.scanner_state.operator
+        elif char == '\'' or char == '"':
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            self.word = char
+            self.current_state = self.scanner_state.string
         elif char.isdigit():
-            self.token.get_token(self.word)
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.scanner_state.letter
         elif char.isdigit():
