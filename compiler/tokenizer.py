@@ -162,7 +162,6 @@ class Scanner:
             TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.scanner_state.operator
-        # TODO: Fix the delimiter state
         elif char in self.delimiter_chars:
             TOKEN_LIST.append((self.token.get_token(self.word), self.word))
             self.word = ''
