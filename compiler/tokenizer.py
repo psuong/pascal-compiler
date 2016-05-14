@@ -134,7 +134,10 @@ class Scanner:
         :param index: int
         :return: ScannerStates
         """
-        next_char = self.memory_mapped_file[index + 1]
+        try:
+            next_char = self.memory_mapped_file[index + 1]
+        except IndexError:
+            next_char = self.memory_mapped_file[index]
         if next_char.isalpha():
             return self.scanner_state.letter
         elif next_char.isdigit():
