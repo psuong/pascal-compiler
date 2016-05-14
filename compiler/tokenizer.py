@@ -90,7 +90,7 @@ class Scanner:
         self.memory_mapped_file = None
         self.current_state = None
         self.delimiter_chars = ' \n\t'
-        self.special_chars = ',./<>?;\[]{}!@#$%^&*()-_+='
+        self.special_chars = ',./<>?:;\[]{}!@#$%^&*()-_+='
         self.word = ''
         self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter string')
         self.token = Token()
@@ -174,7 +174,7 @@ class Scanner:
 
     def read_number(self, char, index):
         """
-        Continues to read a number until until a seperate char is read. "." are
+        Continues to read a number until until a separate char is read. "." are
         ignored.
         :param char: string
         :param index: int
@@ -186,11 +186,13 @@ class Scanner:
             self.current_state = self.scanner_state.digit
         elif char != '.' and char in self.special_chars:
             if '.' in self.word:
-                # TODO: Add a real number to the token list
-                pass
+                TOKEN_LIST.append(self.token.TK_DIGIT['real'], self.word)
+                self.word = ''
+                self.current_state = self.get_next_state(index)
             else:
-                # TODO: Add an integer to the token list
-                pass
+                TOKEN_LIST.append(self.token.TK_DIGIT['integer'], self.word)
+                self.word = ''
+                self.current_state = self.get_next_state(index)
         pass
 
     def read_operator(self, char, index):
