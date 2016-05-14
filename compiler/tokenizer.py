@@ -110,6 +110,8 @@ class Scanner:
                 self.read_operator(char, index)
             elif self.current_state is self.scanner_state.delimiter:
                 self.read_delimiter(char, index)
+            elif self.current_state is self.scanner_state.string:
+                self.read_string(char, index)
 
         for each in TOKEN_LIST:
             print each
@@ -143,6 +145,8 @@ class Scanner:
             return self.scanner_state.digit
         elif next_char in self.delimiter_chars:
             return self.scanner_state.delimiter
+        elif next_char == '\'' or next_char == '"':
+            return self.scanner_state.string
 
     def read_letter(self, char, index):
         """
@@ -162,7 +166,7 @@ class Scanner:
             self.word = char
             self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append((self.token.TK_STRING, self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
             print 'Next State: %s' % self.get_next_state(index)
@@ -204,6 +208,21 @@ class Scanner:
         # Keep getting the next state until you get something other than a delimiter
         if char in self.delimiter_chars:
             self.current_state = self.get_next_state(index)
+
+    def read_string(self, char, index):
+        """
+        Reads any kind of char within a string until the string is closed.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        self.word += char
+        print char
+        if char == '\'' or char == '"':
+            TOKEN_LIST.append((self.token.TK_STRING, self.word))
+            self.word = ''
+            self.current_state = self.get_next_state(index)
+            print self.current_state
 
     @staticmethod
     def print_word(word):
