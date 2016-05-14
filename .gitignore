@@ -19,3 +19,6 @@
 
 # Venv
 /[Vv]env
+
+# Orig files
+*.orig*

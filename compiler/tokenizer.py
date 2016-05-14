@@ -1,7 +1,13 @@
+from mmap import mmap
+from sys import argv
+from aenum import Enum
+
+TOKEN_LIST = []
+
+
 class Token:
     def __init__(self):
-        # TODO: Add a <= and >= operator.
-        self.TK_Operators = {
+        self.TK_OPERATORS = {
             '(': 'TK_OPEN_PARENTH',
             ')': 'TK_CLOSE_PARENTH',
             '.': 'TK_DOT',
@@ -14,33 +20,193 @@ class Token:
             '=': 'TK_EQUAL',
             ',': 'TK_COMMA',
             '>': 'TK_GREATER',
+            '>=': 'TK_GREATER_EQ',
             '<': 'TK_LESS',
+            '<=': 'TK_LESS_EQ',
             ':=': 'TK_ASSIGNMENT'
         }
-        self.TK_Keywords = None
-        self.TK_File = {
-            'EOF': 'TK_EOF'
-        }
-        self.TK_Digit = 'TK_DIGIT'
-        self.TK_Datatypes= {
-            'string': 'TK_DATATYPE_STRING',
-            'real': 'TK_DATATYPE_REAL',
-            'integer': 'TK_DATATYPE_INTEGER',
-            'boolean': 'TK_DATATYPE_BOOLEAN',
-            'character': 'TK_DATATYPE_CHARACTER'
-        }
-        self.TK_declarations = {
 
+        self.TK_KEYWORDS = self.keyword_setup()
+        self.TK_FILE = 'TK_EOF'
+        self.TK_DIGIT = {
+            'real': 'TK_REAL_LITERAL',
+            'integer': 'TK_INTEGER_LITERAL'
+        }
+        self.TK_DATATYPES = {
+            'string': 'TK_STRING',
+            'real': 'TK_REAL',
+            'integer': 'TK_INTEGER',
+            'boolean': 'TK_BOOLEAN',
+            'char': 'TK_CHARACTER'
         }
 
-    @property
-    def tk_keyword_setup(self):
+        self.TK_VAR = 'TK_A_VAR'
+        self.TK_STRING = 'TK_STRING_LIT'
+        self.TK_ID = 'TK_IDENTIFIER'
+
+    @staticmethod
+    def keyword_setup():
         """
-        Generates a dictionary of keywords found in Pascal.
-        :return: dictionary
+        Opens the keywords.txt file and reads it to create the dictionary containing all of
+        the pascal keywords.
+        :return: None
         """
         keyword_dict = {}
         with open('compiler/keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
-                keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper().rstrip())
+                keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper().strip('\n'))
         return keyword_dict
+
+    def get_token(self, word):
+        """
+        Returns a token type based on the word being parsed.
+        :param word: string
+        :return: Token
+        """
+        # TODO: Finish the rest of the token retrieving.
+        if self.TK_DATATYPES.get(word) is not None:
+            return self.TK_DATATYPES[word]
+        elif self.TK_KEYWORDS.get(word) is not None:
+            return self.TK_KEYWORDS[word]
+        elif self.TK_OPERATORS.get(word) is not None:
+            return self.TK_OPERATORS[word]
+        else:
+            return self.TK_ID
+
+
+class FileManager:
+    def __init__(self):
+        self.pascal_file = self.open_pascal_file()
+
+    @staticmethod
+    def open_pascal_file():
+        with open(argv[1], 'r + b') as pascal_file:
+            memory_mapped_file = mmap(pascal_file.fileno(), 0)
+        return memory_mapped_file
+
+
+class Scanner:
+    def __init__(self):
+        self.memory_mapped_file = None
+        self.current_state = None
+        self.delimiter_chars = ' \n\t'
+        self.special_chars = ',./<>?;\'\\[]{}!@#$%^&*()-_+='
+        self.word = ''
+        self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter')
+        self.token = Token()
+
+    def read_memory_file(self):
+        """
+        Reads the memory_mapped_file and determines what tokens to return based on the word.
+        :return: None
+        """
+        self.current_state = self.get_initial_state(self.memory_mapped_file[0])
+
+        for index in range(0, len(self.memory_mapped_file)):
+            char = self.memory_mapped_file[index]
+            if self.current_state is self.scanner_state.letter:
+                self.read_letter(char, index)
+            elif self.current_state is self.scanner_state.operator:
+                self.read_operator(char, index)
+            elif self.current_state is self.scanner_state.delimiter:
+                self.read_delimiter(char, index)
+                pass
+
+        for each in TOKEN_LIST:
+            print each
+
+    def get_initial_state(self, char):
+        """
+        Gets the first initial state of the pascal file.
+        :param char: string
+        :return: ScannerState
+        """
+        initial_char = self.memory_mapped_file[0]
+        if initial_char.isalpha():
+            return self.scanner_state.letter
+        elif initial_char.isdigit():
+            return self.scanner_state.digit
+
+    def get_next_state(self, index):
+        """
+        Scans the next character in the file and determines
+        what the next state should be in the state machine.
+        :param index: int
+        :return: ScannerStates
+        """
+        try:
+            next_char = self.memory_mapped_file[index + 1]
+        except IndexError:
+            next_char = self.memory_mapped_file[index]
+        if next_char.isalpha():
+            return self.scanner_state.letter
+        elif next_char.isdigit():
+            return self.scanner_state.digit
+        elif next_char in self.delimiter_chars:
+            return self.scanner_state.delimiter
+
+    def read_letter(self, char, index):
+        """
+        Appends a character to a word and checks the state.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        if char.isalpha():
+            self.word += char
+            self.current_state = self.scanner_state.letter
+        elif char.isdigit():
+            self.word += char
+            self.current_state = self.scanner_state.digit
+        elif char in self.special_chars:
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            self.word = char
+            self.current_state = self.scanner_state.operator
+        elif char in self.delimiter_chars:
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            self.word = ''
+            self.current_state = self.get_next_state(index)
+            print 'Next State: %s' % self.get_next_state(index)
+
+    def read_operator(self, char, index):
+        """
+        Appends a character to a word and checks the state.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        if char in self.special_chars:
+            self.word += char
+            self.current_state = self.scanner_state.operator
+        elif char.isdigit():
+            self.token.get_token(self.word)
+            self.word = ''
+            self.current_state = self.scanner_state.letter
+        elif char.isdigit():
+            self.token.get_token(self.word)
+            self.word = char
+            self.current_state = self.get_next_state(index)
+        elif char in self.delimiter_chars:
+            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            self.word = ''
+            self.current_state = self.get_next_state(index)
+
+    def read_delimiter(self, char, index):
+        """
+        Reads any kind of delimiter characters and updates the state.
+        :param char: string
+        :param index: int
+        :return: None
+        """
+        # Keep getting the next state until you get something other than a delimiter
+        if char in self.delimiter_chars:
+            self.current_state = self.get_next_state(index)
+
+    @staticmethod
+    def print_word(word):
+        """
+        Static method which prints the given word.
+        :param word:
+        :return:
+        """
+        print word
