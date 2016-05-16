@@ -114,6 +114,8 @@ class Scanner:
             elif self.current_state is self.scanner_state.string:
                 self.read_string(char, index)
 
+        TOKEN_LIST.append((self.token.TK_FILE, 'EOF'))
+
         for each in TOKEN_LIST:
             print each
 

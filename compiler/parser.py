@@ -1,3 +1,7 @@
+import tokenizer
+import byte_manager
+
+
 class Error(Exception):
     pass
 
@@ -61,3 +65,26 @@ class Parser(object):
         for byte in bytearray(op_code):
             self.byte_array[self.instruction_pointer] = byte
             self.instruction_pointer += 1
+
+    def parse(self):
+        """
+        Creates instructions in the byte_array
+        :return:
+        """
+        self.current_token = self.token_list.next()
+        # Match TK_KEYWORD_PROGRAM
+        self.match_token('TK_KEYWORD_PROGRAM')
+        self.match_token('TK_IDENTIFIER')
+        self.match_token('TK_SEMI_COLON')
+        if self.current_token == 'TK_VAR':
+            pass
+        else:
+            pass
+        return self.byte_array
+
+    def case_begin(self):
+        self.match_token('TK_KEYWORD_BEGIN')
+        # TODO Match the statements
+        self.match_token('TK_KEYWORD_END')
+        self.match_token('TK_EOF')
+        # TODO: Generate the opcode

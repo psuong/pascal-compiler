@@ -1,4 +1,7 @@
-from tokenizer import Token, FileManager, Scanner
+# mv@panix.com : zip
+
+from tokenizer import FileManager, Scanner
+
 
 def load_pascal_file():
     pascal_file = FileManager()
