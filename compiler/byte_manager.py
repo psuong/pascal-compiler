@@ -28,8 +28,12 @@ def byte_packer(value):
 
 
 def byte_unpacker(byte_array):
-    # TODO: Unpack the byte array into the original value
-    pass
+    """
+    Performs binary or operation and splices the byte array to the original value
+    :param byte_array: list, tuple
+    :return: int
+    """
+    return (byte_array[0] << 24) | (byte_array[1] << 16) | (byte_array[2] << 8) | (byte_array[3])
 
 
 class Type(object):
