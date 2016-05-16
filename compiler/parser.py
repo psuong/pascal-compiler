@@ -9,7 +9,7 @@ class Error(Exception):
 class Parser(object):
     def __init__(self, token_list):
         self.token_list = token_list
-        self.current_token = None
+        self.current_token = None  # current_token is a tuple (TK_, value)
         self.instruction_pointer = 0
         self.data_pointer = 0
         self.symbol_table = []
@@ -88,3 +88,38 @@ class Parser(object):
         self.match_token('TK_KEYWORD_END')
         self.match_token('TK_EOF')
         # TODO: Generate the opcode
+        self.match_token(byte_manager.op_code.HALT)
+
+    def case_pascal_statements(self):
+        while self.current_token.object_type != 'TK_KEYWORD_END':
+            object_type = self.current_token.object_type
+            if object_type == 'TK_KEYWORD_WRITELN':
+                # TODO: Add the writeln statement
+                pass
+            elif object_type == 'TK_KEYWORD_WHILE':
+                pass
+            elif object_type == 'TK_KEYWORD_REPEAT':
+                pass
+            elif object_type == 'TK_KEYWORD_IF':
+                pass
+            else:
+                print 'Statements can\'t be matched.'
+                return
+
+    def write_line_statement(self):
+        # Match the writeln keyword
+        self.match_token('TK_KEYWORD_WRITELN')
+        # Match the open_parenthesis
+        self.match_token('TK_OPEN_PARENTH')
+        while True:
+            if self.current_token.object_type == 'TK_IDENTIFIER':
+                symbol = self.find_entry_or_get_error()
+                if symbol is None:
+                    pass
+            else:
+                pass
+        pass
+
+    def find_entry_or_get_error(self):
+        symbol = self.find_symbol_table_entry(self.current_token.value)
+        pass

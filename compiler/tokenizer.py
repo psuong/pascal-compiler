@@ -5,6 +5,12 @@ from aenum import Enum
 TOKEN_LIST = []
 
 
+class TokenContainer(object):
+    def __init__(self, tk_var, value):
+        self.tk_var = tk_var
+        self.value = value
+
+
 class Token:
     def __init__(self):
         self.TK_OPERATORS = {
@@ -114,10 +120,10 @@ class Scanner:
             elif self.current_state is self.scanner_state.string:
                 self.read_string(char, index)
 
-        TOKEN_LIST.append((self.token.TK_FILE, 'EOF'))
+        TOKEN_LIST.append(TokenContainer(self.token.TK_FILE, 'EOF'))
 
         for each in TOKEN_LIST:
-            print each
+            print 'ID: %s, Value: %s' % (each.tk_var, each.value)
 
     def get_initial_state(self, char):
         """
@@ -167,11 +173,11 @@ class Scanner:
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
             # print 'Next State: %s' % self.get_next_state(index)
@@ -191,17 +197,17 @@ class Scanner:
             self.current_state = self.scanner_state.digit
         elif char != '.' and char in self.special_chars:
             if '.' in self.word:
-                TOKEN_LIST.append((self.token.TK_DIGIT['real'], self.word))
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DIGIT['real'], self.word))
                 self.word = char
                 self.current_state = self.scanner_state.operator
             else:
-                TOKEN_LIST.append((self.token.TK_DIGIT['integer'], self.word))
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DIGIT['integer'], self.word))
                 self.word = char
                 self.current_state = self.scanner_state.operator
                 # print 'State: %s \t Char: %s' % (self.current_state, self.memory_mapped_file[index + 1])
         elif char.isalpha():
             self.word += char
-            TOKEN_LIST.append((self.token.TK_ID, self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.TK_ID, self.word))
             self.current_state = self.get_next_state(index)
 
     def read_operator(self, char, index):
@@ -215,7 +221,7 @@ class Scanner:
             self.word += char
             self.current_state = self.scanner_state.operator
         elif char == '\'' or char == '"':
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.scanner_state.string
         elif char.isdigit():
@@ -223,11 +229,11 @@ class Scanner:
             self.word = ''
             self.current_state = self.scanner_state.letter
         elif char.isdigit():
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.get_next_state(index)
         elif char in self.delimiter_chars:
-            TOKEN_LIST.append((self.token.get_token(self.word), self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
 
@@ -251,7 +257,7 @@ class Scanner:
         """
         self.word += char
         if char == '\'' or char == '"':
-            TOKEN_LIST.append((self.token.TK_STRING, self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.TK_STRING, self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
 
