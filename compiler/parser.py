@@ -50,3 +50,14 @@ class Parser(object):
         """
         self.byte_array[self.instruction_pointer] = op_code
         self.instruction_pointer += 1
+
+    def generate_address(self, op_code):
+        """
+        Creates an address on four bytes and appends to a bytearray and increments the
+        instruction_pointer by 4.
+        :param op_code:
+        :return:
+        """
+        for byte in bytearray(op_code):
+            self.byte_array[self.instruction_pointer] = byte
+            self.instruction_pointer += 1
