@@ -27,5 +27,10 @@ def byte_packer(value):
     return (value >> 24) & 0xFF, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF
 
 
+def byte_unpacker(byte_array):
+    # TODO: Unpack the byte array into the original value
+    pass
+
+
 class Type(object):
     type_int, type_real, type_bool, type_char, type_string = range(5)
