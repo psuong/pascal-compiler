@@ -94,6 +94,25 @@ class ParserModule(object):
         # TODO: Generate the opcode
         self.match_token(byte_manager.op_code.HALT)
 
+    def case_var(self):
+        self.match_token('TK_VAR')
+        var_declarations = []
+        while self.current_token.tk_var == 'TK_ID':
+            # If there exists a the variable int he var_declarations, then
+            # the variable already exists. This is an error
+            if self.current_token.tk_var in var_declarations:
+                raise Error('Variable already declared: %s' % self.current_token.value)
+
+            var_declarations.append(self.current_token.tk_var)
+            self.match_token('TK_ID')
+
+            # Multiple var declarations in the same line, check for
+            # the commas.
+            if self.current_token.tk_var == ',':
+                self.match_token('TK_COMMA')
+            self.match_token('TK_COLON')
+            # TODO Check the datatypes of the variable declarations
+
     def case_pascal_statements(self):
         while self.current_token.object_type != 'TK_KEYWORD_END':
             object_type = self.current_token.object_type
