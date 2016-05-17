@@ -6,7 +6,7 @@ class Error(Exception):
     pass
 
 
-class Parser(object):
+class ParserModule(object):
     def __init__(self, token_list):
         self.token_list = token_list
         self.current_token = None  # current_token is a tuple (TK_, value)
@@ -33,8 +33,8 @@ class Parser(object):
         :param token_type: string
         :return: None
         """
-        if self.current_token.object_type == token_type:
-            print 'Matched: %s, %s ' % (token_type, self.current_token.object_type)
+        if self.current_token.tk_var == token_type:
+            print 'Matched: %s, %s ' % (token_type, self.current_token.tk_var)
             try:
                 # Get the next token list if available
                 self.current_token = self.token_list.next()
@@ -50,6 +50,7 @@ class Parser(object):
         """
         Creates op_code and assigns it to the byte array. The instruction_pointer is
         additionally incremented by one.
+        :param op_code:
         :return: None
         """
         self.byte_array[self.instruction_pointer] = op_code
@@ -76,9 +77,12 @@ class Parser(object):
         self.match_token('TK_KEYWORD_PROGRAM')
         self.match_token('TK_IDENTIFIER')
         self.match_token('TK_SEMI_COLON')
-        if self.current_token == 'TK_VAR':
+        # TODO: Check if the next token is a "VAR" token and perform
+        # TODO: operations on it
+        if self.current_token.tk_var == 'TK_VAR':
             pass
         else:
+            # TODO: Otherwise start performing operations on the "BEGIN" keyword
             pass
         return self.byte_array
 

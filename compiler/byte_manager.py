@@ -5,7 +5,6 @@ op_code = Enum('OPCODE',
                'GTE DUP JMP JFALSE JTRUE HALT PRINT PRINT_I PRINT_C'
                'PRINT_B PRINT_R NEWLINE NOT XCHNG FADD FSUB FMULTIPLY'
                'OR LTE EQL NEQ GTR LES PRINT_I_LIT')
-
 instruction_length = 5
 
 conditionals = {

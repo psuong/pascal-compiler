@@ -3,6 +3,7 @@ from sys import argv
 from aenum import Enum
 
 TOKEN_LIST = []
+CONST_TK_ID = 'TK_IDENTIFIER'
 
 
 class TokenContainer(object):
@@ -48,7 +49,7 @@ class Token:
 
         self.TK_VAR = 'TK_A_VAR'
         self.TK_STRING = 'TK_STRING_LIT'
-        self.TK_ID = 'TK_IDENTIFIER'
+        self.TK_ID = CONST_TK_ID
 
     @staticmethod
     def keyword_setup():
