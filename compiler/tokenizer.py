@@ -4,6 +4,7 @@ from aenum import Enum
 
 TOKEN_LIST = []
 CONST_TK_ID = 'TK_IDENTIFIER'
+TK_OPERATOR = 'TK_OPERATOR'
 
 
 class TokenContainer(object):
@@ -40,11 +41,11 @@ class Token:
             'integer': 'TK_INTEGER_LITERAL'
         }
         self.TK_DATATYPES = {
-            'string': 'TK_STRING',
-            'real': 'TK_REAL',
-            'integer': 'TK_INTEGER',
-            'boolean': 'TK_BOOLEAN',
-            'char': 'TK_CHARACTER'
+            'string': 'TK_DATATYPE_STRING',
+            'real': 'TK_DATATYPE_REAL',
+            'integer': 'TK_DATATYPE_INTEGER',
+            'boolean': 'TK_DATATYPE_BOOLEAN',
+            'char': 'TK_DATATYPE_CHARACTER'
         }
 
         self.TK_VAR = 'TK_A_VAR'

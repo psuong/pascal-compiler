@@ -1,3 +1,11 @@
+VARIABLE = 'var'
+FUNCTION = 'func'
+PROCEDURE = 'pro'
+EXPRESSION = 'expr'
+STATEMENT = 'stat'
+PARAMETER = 'par'
+
+
 class Symbol(object):
     def __init__(self, name, object_type, data_type, attribute=None, data_pointer=None):
         self.name = name
@@ -8,7 +16,7 @@ class Symbol(object):
         self.attribute = attribute
 
     def __unicode__(self):
-        return '(%s, %s, %i)' % (self.name, self.object_type, self.data_pointer)
+        return '%s, %s, %i' % (self.name, self.object_type, self.data_pointer)
 
     def __repr__(self):
-        return '(%s, %s, %i)' % (self.name, self.object_type, self.data_pointer)
+        return '%s, %s, %i' % (self.name, self.object_type, self.data_pointer)
