@@ -35,8 +35,9 @@ class ParserModule(object):
         """
         symbol_entry = self.find_symbol_table_entry(self.current_token.token)
         if symbol_entry is None:
-            raise Error('Variable is not found in ')
-        pass
+            raise Error('Variable %s is not found in the symbol table!' % self.current_token.value)
+        else:
+            return symbol_entry
 
     def match_token(self, token_type):
         """
