@@ -19,25 +19,14 @@ class ParserModule(object):
     def find_symbol_table_entry(self, name):
         """
         Looks through the entries in the symbol table and checks for the name. If it
-        exists, return the instance of the symbol. Otherwise, return nothing.
+        exists, return the instance of the symbol. Otherwise, raise an error.
         :param name: string
         :return: Symbol
         """
         for symbol_entry in self.symbol_table:
             if symbol_entry.name == name:
                 return symbol_entry
-        return None
-
-    def get_available_symbol(self):
-        """
-        Checks if the symbol is in the symbol table. Otherwise return an error.
-        :return:
-        """
-        symbol_entry = self.find_symbol_table_entry(self.current_token.token)
-        if symbol_entry is None:
-            raise Error('Variable %s is not found in the symbol table!' % self.current_token.value)
-        else:
-            return symbol_entry
+        raise Error('Variable [%s] is not found in the symbol table!' % name)
 
     def match_token(self, token_type):
         """
@@ -135,7 +124,6 @@ class ParserModule(object):
                 self.match_token('TK_COMMA')
             self.match_token('TK_COLON')
 
-        # Case: integer data type
         if self.current_token.token == 'TK_DATATYPE_INTEGER':
             self.match_token('TK_DATATYPE_INTEGER')
         elif self.current_token.token == 'TK_DATATYPE_REAL':
@@ -161,4 +149,9 @@ class ParserModule(object):
             self.case_begin()
 
     def case_assignment(self):
-        pass
+        symbol_entry = self.find_symbol_table_entry(self.current_token.value)
+        left_hand_side = symbol_entry.data_type
+        self.match_token('TK_IDENTIFIER')
+        self.match_token('TK_ASSIGNMENT')
+        # TODO: Implement the term(), expression(), factor()
+        right_hand_side = None
