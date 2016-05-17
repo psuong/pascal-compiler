@@ -8,8 +8,8 @@ TK_OPERATOR = 'TK_OPERATOR'
 
 
 class TokenContainer(object):
-    def __init__(self, tk_var, value):
-        self.tk_var = tk_var
+    def __init__(self, token, value):
+        self.token = token
         self.value = value
 
 
@@ -125,7 +125,7 @@ class Scanner:
         TOKEN_LIST.append(TokenContainer(self.token.TK_FILE, 'EOF'))
 
         for each in TOKEN_LIST:
-            print 'ID: %s, Value: %s' % (each.tk_var, each.value)
+            print 'ID: %s, Value: %s' % (each.token, each.value)
 
     def get_initial_state(self, char):
         """
