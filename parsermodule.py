@@ -53,7 +53,6 @@ class ParserModule(object):
         :param op_code:
         :return: None
         """
-        print self.instruction_pointer
         self.byte_array[self.instruction_pointer] = op_code
         self.instruction_pointer += 1
 
@@ -110,7 +109,10 @@ class ParserModule(object):
             # TODO Check for TK_IDENTIFIER
             # TODO Check for TK_KEYWORD_WHILE
             # TODO Check for TK_KEYWORD_IF
-            pass
+            elif token_type == 'TK_SEMI_COLON':
+                self.match_token('TK_SEMI_COLON')
+            elif token_type == 'TK_KEYWORD_END':
+                self.match_token('TK_KEYWORD_END')
 
     def case_var(self):
         self.match_token('TK_KEYWORD_VAR')
