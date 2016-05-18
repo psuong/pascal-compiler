@@ -1,6 +1,7 @@
 # mv@panix.com : zip
 from tokenizer import FileManager, Scanner, TOKEN_LIST
 from parsermodule import ParserModule
+from emulator import EmulatorModule
 
 
 def load_pascal_file():
@@ -12,6 +13,10 @@ def load_pascal_file():
 
     scanner.read_memory_file()
     parser.parse()
+
+    emulator = EmulatorModule(parser.byte_array)
+
+    emulator.execute()
 
 
 if __name__ == '__main__':
