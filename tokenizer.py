@@ -172,15 +172,12 @@ class Scanner:
         if char.isalpha():
             self.word += char
             self.current_state = self.scanner_state.letter
-            print 'CHAR STATE IN LETTER: %s' % (self.word)
         elif char.isdigit():
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char in self.special_chars:
-            print 'APPENDING: %s \t VALUE: %s' % (self.token.get_token(self.word), self.word)
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
-            print 'SPECIAL CHAR: %s' % self.word
             self.current_state = self.scanner_state.operator
         elif char in self.delimiter_chars:
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
@@ -224,14 +221,17 @@ class Scanner:
         :return: None
         """
         if char in self.special_chars:
-            self.word += char
+            if '(' in self.word or ')' in self.word and char == ';':
+                TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
+                self.word = char
+            else:
+                self.word += char
             self.current_state = self.scanner_state.operator
         elif char == '\'' or char == '"':
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.scanner_state.string
         elif char.isalpha():
-            print 'CHAR: %s' % char
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.scanner_state.letter

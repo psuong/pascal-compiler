@@ -59,7 +59,7 @@ class ParserModule(object):
     def generate_address(self, op_code):
         """
         Creates an address on four bytes and appends to a bytearray and increments the
-        instruction_pointer by 4.
+        instruction_pointer by 1.
         :param op_code:
         :return:
         """
@@ -181,8 +181,11 @@ class ParserModule(object):
                 if term == 'TK_DATATYPE_INTEGER':
                     self.generate_opcode(byte_manager.op_code.PRINT_I)
                     self.generate_address(symbol_entry.data_pointer)
-                elif term == 'TK_DATATYPE_CHAR':
+                elif term == 'TK_DATATYPE_CHARACTER':
                     self.generate_opcode(byte_manager.op_code.PRINT_C)
+                    self.generate_address(symbol_entry.data_pointer)
+                elif term == 'TK_DATATYPE_REAL':
+                    self.generate_opcode(byte_manager.op_code.PRINT_R)
                     self.generate_address(symbol_entry.data_pointer)
                 else:
                     raise Error('%s is not supported within writeln!' % symbol_entry)
