@@ -1,14 +1,36 @@
-from aenum import Enum
-
-op_code = Enum('OPCODE',
-               'PUSHI PUSH POP ADD SUBTRACT MULTIPLY DIVIDE DIV CVR'
-               'GREATER_THAN_EQ GREATER_THAN'
-               'LESS_THAN_EQ LESS_THAN'
-               'EQUAL NOT_EQUAL'
-               'DUP JMP JFALSE JTRUE HALT PRINT PRINT_I PRINT_C'
-               'PRINT_B PRINT_R NEWLINE NOT XCHG'
-               'FLOAT_ADD FLOAT_SUBTRACT FLOAT_MULTIPLY FLOAT_DIVIDE'
-               'OR PRINT_I_LIT')
+class op_code:
+    PUSHI = 0
+    PUSH = 1
+    POP = 2
+    ADD = 3
+    SUBTRACT = 4
+    MULTIPLY = 5
+    DIVIDE = 6
+    DIV = 7
+    GREATER_THAN = 8
+    GREATER_THAN_EQ = 9
+    EQUAL = 10
+    NOT_EQUAL = 11
+    DUP = 12
+    JMP = 13
+    JFALSE = 14
+    JTRUE = 15
+    HALT = 16
+    PRINT = 17
+    PRINT_I = 18
+    PRINT_C = 19
+    PRINT_B = 20
+    PRINT_R = 21
+    NEWLINE = 22
+    NOT = 23
+    FLOAT_ADD = 24
+    FLOAT_SUBTRACT = 25
+    FLOAT_MULTIPLY = 26
+    FLOAT_DIVIDE = 27
+    OR = 28
+    PRINT_I_LIT = 29
+    CVR = 30
+    XCHG = 31
 
 instruction_length = 5
 

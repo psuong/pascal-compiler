@@ -61,7 +61,7 @@ class Token:
         :return: None
         """
         keyword_dict = {}
-        with open('compiler/keywords.txt', 'r') as keyword_file:
+        with open('keywords.txt', 'r') as keyword_file:
             for line in keyword_file:
                 keyword_dict[line.rstrip()] = 'TK_KEYWORD_%s' % (line.upper().strip('\n'))
         return keyword_dict
@@ -200,11 +200,11 @@ class Scanner:
             self.current_state = self.scanner_state.digit
         elif char != '.' and char in self.special_chars:
             if '.' in self.word:
-                TOKEN_LIST.append(TokenContainer(self.token.TK_DIGIT['real'], self.word))
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['real'], self.word))
                 self.word = char
                 self.current_state = self.scanner_state.operator
             else:
-                TOKEN_LIST.append(TokenContainer(self.token.TK_DIGIT['integer'], self.word))
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['integer'], self.word))
                 self.word = char
                 self.current_state = self.scanner_state.operator
                 # print 'State: %s \t Char: %s' % (self.current_state, self.memory_mapped_file[index + 1])

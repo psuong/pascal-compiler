@@ -1,4 +1,3 @@
-import tokenizer
 import byte_manager
 import symbol
 
@@ -14,7 +13,7 @@ class ParserModule(object):
         self.instruction_pointer = 0
         self.data_pointer = 0
         self.symbol_table = []
-        self.byte_array = bytearray(1000)  # For now allocate a large amount of memory
+        self.byte_array = bytearray(500)  # For now allocate a large amount of memory
 
     def find_symbol_table_entry(self, name):
         """
@@ -43,8 +42,8 @@ class ParserModule(object):
                 return None
         else:
             raise Error('Token not found:\n Received: %s \n Got: %s' % (
-                str(token_type),
-                str(self.current_token.object_type)
+                token_type,
+                self.current_token.object_type
             ))
 
     def generate_opcode(self, op_code):
@@ -54,6 +53,7 @@ class ParserModule(object):
         :param op_code:
         :return: None
         """
+        print self.instruction_pointer
         self.byte_array[self.instruction_pointer] = op_code
         self.instruction_pointer += 1
 
@@ -105,7 +105,7 @@ class ParserModule(object):
         while self.current_token.token != 'TK_EOF':
             token_type = self.current_token.token
             if token_type == 'TK_IDENTIFIER':
-                pass
+                self.case_assignment()
             # TODO Check for TK_KEYWORD_WRITELN
             # TODO Check for TK_IDENTIFIER
             # TODO Check for TK_KEYWORD_WHILE
@@ -126,18 +126,22 @@ class ParserModule(object):
 
             # Multiple var declarations in the same line, check for
             # the commas.
-            if self.current_token.token == ',':
+            if self.current_token.token == 'TK_COMMA':
                 self.match_token('TK_COMMA')
             self.match_token('TK_COLON')
 
         if self.current_token.token == 'TK_DATATYPE_INTEGER':
             self.match_token('TK_DATATYPE_INTEGER')
+            data_type = 'TK_DATATYPE_INTEGER'
         elif self.current_token.token == 'TK_DATATYPE_REAL':
             self.match_token('TK_DATATYPE_REAL')
+            data_type = 'TK_DATATYPE_REAL'
         elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
             self.match_token('TK_DATATYPE_CHARACTER')
+            data_type = 'TK_DATATYPE_CHARACTER'
         elif self.current_token.token == 'TK_DATATYPE_BOOLEAN':
             self.match_token('TK_DATATYPE_BOOLEAN')
+            data_type = 'TK_DATATYPE_BOOLEAN'
         else:
             raise Error('%s is an unknown data type' % self.current_token.tk_var)
 
@@ -146,9 +150,11 @@ class ParserModule(object):
         for each_var in var_declarations:
             self.symbol_table.append(symbol.Symbol(
                 name=each_var.value,
-                object_type=each_var.token,
-                data_type=symbol.VARIABLE
+                object_type=symbol.VARIABLE,
+                data_type=data_type,
+                data_pointer=self.data_pointer
             ))
+            self.data_pointer += 1
         if self.current_token.token == 'TK_KEYWORD_VAR':
             self.case_var()
         else:
@@ -159,8 +165,12 @@ class ParserModule(object):
         left_hand_side = symbol_entry.data_type
         self.match_token('TK_IDENTIFIER')
         self.match_token('TK_ASSIGNMENT')
-        # TODO: Implement the term(), expression(), factor()
-        right_hand_side = None
+        right_hand_side = self.expression()
+        if left_hand_side == right_hand_side:
+            self.generate_opcode(byte_manager.op_code.POP)
+            self.generate_opcode(symbol_entry.data_pointer)
+        else:
+            raise Error('Mismatched %s is not equal to %s!' % (left_hand_side, right_hand_side))
 
     def term(self):
         term = self.factor()
@@ -180,12 +190,12 @@ class ParserModule(object):
 
     def factor(self):
         token = self.current_token.token
-
         if token == 'TK_IDENTIFIER':
             symbol_entry = self.find_symbol_table_entry(self.current_token.value)
             self.generate_opcode(byte_manager.op_code.PUSH)
             self.generate_address(symbol_entry.data_pointer)
             self.match_token('TK_IDENTIFIER')
+            return symbol_entry.data_type
         elif token == 'TK_KEYWORD_NOT':
             self.generate_address(byte_manager.op_code.NOT)
             self.match_token('TK_KEYWORD_NOT')
