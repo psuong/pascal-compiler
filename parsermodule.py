@@ -163,18 +163,18 @@ class ParserModule(object):
         self.match_token('TK_KEYWORD_WRITELN')
         self.match_token('TK_OPEN_PARENTH')
         while True:
-            # if self.current_token.token == 'TK_DATATYPE_STRING':
-            #     self.generate_opcode(byte_manager.op_code.PRINT_STRING_LIT)
-            #     self.generate_address(self.current_token.value)
-            #     self.match_token('TK_DATATYPE_STRING')
-            # elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
-            #     self.generate_opcode(byte_manager.op_code.PRINT_C)
-            #     self.generate_address(self.current_token.value)
-            #     self.match_token('TK_DATATYPE_CHARACTER')
-            # elif self.current_token.token == 'TK_DATATYPE_INTEGER':
-            #     self.generate_opcode(byte_manager.op_code.PRINT_I_LIT)
-            #     self.generate_address(int(self.current_token.value))
-            #     self.match_token('TK_DATATYPE_INTEGER')
+            if self.current_token.token == 'TK_DATATYPE_STRING':
+                self.generate_opcode(byte_manager.op_code.PRINT_STRING_LIT)
+                self.generate_address(self.current_token.value)
+                self.match_token('TK_DATATYPE_STRING')
+            elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
+                self.generate_opcode(byte_manager.op_code.PRINT_C)
+                self.generate_address(self.current_token.value)
+                self.match_token('TK_DATATYPE_CHARACTER')
+            elif self.current_token.token == 'TK_DATATYPE_INTEGER':
+                self.generate_opcode(byte_manager.op_code.PRINT_I_LIT)
+                self.generate_address(int(self.current_token.value))
+                self.match_token('TK_DATATYPE_INTEGER')
             if self.current_token.token == 'TK_IDENTIFIER':
                 symbol_entry = self.find_symbol_table_entry(self.current_token.value)
                 term = self.expression()

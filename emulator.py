@@ -56,7 +56,11 @@ class EmulatorModule(object):
         elif operator == op_code.PRINT_I:
             self.print_i()
             self.execute()
+        elif operator == op_code.NEWLINE:
+            self.print_newline()
+            self.execute()
         elif operator == op_code.HALT:
+            self.echo_print_statements()
             sys.exit()
         else:
             print self.data_stack
@@ -73,4 +77,3 @@ class EmulatorModule(object):
     def print_newline(self):
         self.instruction_pointer += 1
         self.echo.append('\n')
-
