@@ -260,7 +260,7 @@ class Scanner:
         """
         self.word += char
         if char == '\'' or char == '"':
-            TOKEN_LIST.append(TokenContainer(self.token.TK_STRING, self.word))
+            TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['string'], self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
 

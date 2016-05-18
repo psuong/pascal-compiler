@@ -41,9 +41,9 @@ class ParserModule(object):
             except StopIteration:
                 return None
         else:
-            raise Error('Token not found:\n Received: %s \n Got: %s' % (
+            raise Error('Token not found:\t Received: %s \t Got: %s' % (
                 token_type,
-                self.current_token.object_type
+                self.current_token.token
             ))
 
     def generate_opcode(self, op_code):
@@ -87,16 +87,20 @@ class ParserModule(object):
         # TODO: operations on it
         if self.current_token.token == 'TK_KEYWORD_VAR':
             self.case_var()
+        elif self.current_token.token == 'TK_KEYWORD_BEGIN':
+            self.case_begin()
         else:
             # TODO: Otherwise start performing operations on the "BEGIN" keyword
             pass
         return self.byte_array
 
     def case_begin(self):
+        print self.current_token.token
         self.match_token('TK_KEYWORD_BEGIN')
         self.statements()
-        # self.match_token('TK_KEYWORD_END')
-        # self.match_token('TK_EOF')
+        self.match_token('TK_KEYWORD_END')
+        self.match_token('TK_DOT')
+        self.match_token('TK_EOF')
         # TODO: Generate the opcode
         # self.match_token(byte_manager.op_code.HALT)
 
@@ -105,14 +109,13 @@ class ParserModule(object):
             token_type = self.current_token.token
             if token_type == 'TK_IDENTIFIER':
                 self.case_assignment()
-            # TODO Check for TK_KEYWORD_WRITELN
-            # TODO Check for TK_IDENTIFIER
-            # TODO Check for TK_KEYWORD_WHILE
-            # TODO Check for TK_KEYWORD_IF
+            elif token_type == 'TK_KEYWORD_WRITELN':
+                self.case_writeln()
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
+            # End case
             elif token_type == 'TK_KEYWORD_END':
-                self.match_token('TK_KEYWORD_END')
+                return
 
     def case_var(self):
         self.match_token('TK_KEYWORD_VAR')
@@ -161,6 +164,45 @@ class ParserModule(object):
             self.case_var()
         else:
             self.case_begin()
+
+    def case_writeln(self):
+        self.match_token('TK_KEYWORD_WRITELN')
+        self.match_token('TK_OPEN_PARENTH')
+        while True:
+            if self.current_token.token == 'TK_DATATYPE_STRING':
+                self.generate_opcode(byte_manager.op_code.PRINT_STRING_LIT)
+                self.generate_address(self.current_token.value)
+                self.match_token('TK_DATATYPE_STRING')
+            elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
+                self.generate_opcode(byte_manager.op_code.PRINT_C)
+                self.generate_address(self.current_token.value)
+                self.match_token('TK_DATATYPE_CHAR')
+            elif self.current_token.token == 'TK_DATATYPE_INTEGER':
+                self.generate_opcode(byte_manager.op_code.PRINT_I_LIT)
+                self.generate_address(int(self.current_token.value))
+                self.match_token('TK_DATATYPE_INTEGER')
+            elif self.current_token.token == 'TK_IDENTIFIER':
+                symbol_entry = self.find_symbol_table_entry(self.current_token.value)
+                term = self.expression()
+                if term == 'TK_DATATYPE_INTEGER':
+                    self.generate_opcode(byte_manager.op_code.PRINT_I)
+                    self.generate_address(symbol_entry.data_pointer)
+                elif term == 'TK_DATATYPE_CHAR':
+                    self.generate_opcode(byte_manager.op_code.PRINT_C)
+                    self.generate_address(symbol_entry.data_pointer)
+                else:
+                    raise Error('%s is not supported within writeln!' % symbol_entry)
+            else:
+                raise Error('%s is not supported within writeln!' % self.current_token.value)
+
+            if self.current_token.token == 'TK_COMMA':
+                self.match_token('TK_COMMA')
+            elif self.current_token.token == 'TK_CLOSE_PARENTH':
+                self.match_token('TK_CLOSE_PARENTH')
+                self.generate_opcode(byte_manager.op_code.NEWLINE)
+                return
+            else:
+                raise Error('Found %s, not comma or close parenthesis!' % self.current_token.value)
 
     def case_assignment(self):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)

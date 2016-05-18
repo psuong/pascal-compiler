@@ -31,6 +31,7 @@ class op_code:
     PRINT_I_LIT = 29
     CVR = 30
     XCHG = 31
+    PRINT_STRING_LIT = 32
 
 instruction_length = 5
 
