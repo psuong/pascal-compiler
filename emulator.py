@@ -13,7 +13,7 @@ class EmulatorModule(object):
         self.data_pointer = 0
 
     def echo_print_statements(self):
-        print '============nStandard Out\n============'
+        print '============\nStandard Out\n============'
         for each in self.echo:
             print each
 
@@ -73,3 +73,4 @@ class EmulatorModule(object):
     def print_newline(self):
         self.instruction_pointer += 1
         self.echo.append('\n')
+

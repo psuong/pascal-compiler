@@ -63,7 +63,7 @@ class ParserModule(object):
         :param op_code:
         :return:
         """
-        for byte in bytearray(op_code):
+        for byte in byte_manager.byte_packer(op_code):
             self.byte_array[self.instruction_pointer] = byte
             self.instruction_pointer += 1
 
@@ -163,19 +163,19 @@ class ParserModule(object):
         self.match_token('TK_KEYWORD_WRITELN')
         self.match_token('TK_OPEN_PARENTH')
         while True:
-            if self.current_token.token == 'TK_DATATYPE_STRING':
-                self.generate_opcode(byte_manager.op_code.PRINT_STRING_LIT)
-                self.generate_address(self.current_token.value)
-                self.match_token('TK_DATATYPE_STRING')
-            elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
-                self.generate_opcode(byte_manager.op_code.PRINT_C)
-                self.generate_address(self.current_token.value)
-                self.match_token('TK_DATATYPE_CHAR')
-            elif self.current_token.token == 'TK_DATATYPE_INTEGER':
-                self.generate_opcode(byte_manager.op_code.PRINT_I_LIT)
-                self.generate_address(int(self.current_token.value))
-                self.match_token('TK_DATATYPE_INTEGER')
-            elif self.current_token.token == 'TK_IDENTIFIER':
+            # if self.current_token.token == 'TK_DATATYPE_STRING':
+            #     self.generate_opcode(byte_manager.op_code.PRINT_STRING_LIT)
+            #     self.generate_address(self.current_token.value)
+            #     self.match_token('TK_DATATYPE_STRING')
+            # elif self.current_token.token == 'TK_DATATYPE_CHARACTER':
+            #     self.generate_opcode(byte_manager.op_code.PRINT_C)
+            #     self.generate_address(self.current_token.value)
+            #     self.match_token('TK_DATATYPE_CHARACTER')
+            # elif self.current_token.token == 'TK_DATATYPE_INTEGER':
+            #     self.generate_opcode(byte_manager.op_code.PRINT_I_LIT)
+            #     self.generate_address(int(self.current_token.value))
+            #     self.match_token('TK_DATATYPE_INTEGER')
+            if self.current_token.token == 'TK_IDENTIFIER':
                 symbol_entry = self.find_symbol_table_entry(self.current_token.value)
                 term = self.expression()
                 if term == 'TK_DATATYPE_INTEGER':
@@ -209,7 +209,7 @@ class ParserModule(object):
         right_hand_side = self.expression()
         if left_hand_side == right_hand_side:
             self.generate_opcode(byte_manager.op_code.POP)
-            self.generate_opcode(symbol_entry.data_pointer)
+            self.generate_address(symbol_entry.data_pointer)
         else:
             raise Error('Mismatched %s is not equal to %s!' % (left_hand_side, right_hand_side))
 
@@ -233,7 +233,7 @@ class ParserModule(object):
         token = self.current_token.token
         if token == 'TK_IDENTIFIER':
             symbol_entry = self.find_symbol_table_entry(self.current_token.value)
-            self.generate_opcode(byte_manager.op_code.PUSH)
+            self.generate_opcode(byte_manager.op_code.PUSHI)
             self.generate_address(symbol_entry.data_pointer)
             self.match_token('TK_IDENTIFIER')
             return symbol_entry.data_type
