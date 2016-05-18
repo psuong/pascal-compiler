@@ -1,10 +1,15 @@
 from aenum import Enum
 
 op_code = Enum('OPCODE',
-               'PUSHI PUSH POP ADD SUB MULTIPLY DIVIDE DIV CVR '
-               'GTE DUP JMP JFALSE JTRUE HALT PRINT PRINT_I PRINT_C'
-               'PRINT_B PRINT_R NEWLINE NOT XCHNG FADD FSUB FMULTIPLY'
-               'OR LTE EQL NEQ GTR LES PRINT_I_LIT')
+               'PUSHI PUSH POP ADD SUBTRACT MULTIPLY DIVIDE DIV CVR'
+               'GREATER_THAN_EQ GREATER_THAN'
+               'LESS_THAN_EQ LESS_THAN'
+               'EQUAL NOT_EQUAL'
+               'DUP JMP JFALSE JTRUE HALT PRINT PRINT_I PRINT_C'
+               'PRINT_B PRINT_R NEWLINE NOT XCHG'
+               'FLOAT_ADD FLOAT_SUBTRACT FLOAT_MULTIPLY FLOAT_DIVIDE'
+               'OR PRINT_I_LIT')
+
 instruction_length = 5
 
 conditionals = {

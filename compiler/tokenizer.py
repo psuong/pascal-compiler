@@ -26,6 +26,7 @@ class Token:
             '/': 'TK_DIVIDE',
             '*': 'TK_MULTIPLY',
             '=': 'TK_EQUAL',
+            '<>': 'TK_NOT_EQUAL',
             ',': 'TK_COMMA',
             '>': 'TK_GREATER',
             '>=': 'TK_GREATER_EQ',
