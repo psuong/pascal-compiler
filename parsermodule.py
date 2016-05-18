@@ -83,26 +83,20 @@ class ParserModule(object):
         self.match_token('TK_KEYWORD_PROGRAM')
         self.match_token('TK_IDENTIFIER')
         self.match_token('TK_SEMI_COLON')
-        # TODO: Check if the next token is a "VAR" token and perform
-        # TODO: operations on it
         if self.current_token.token == 'TK_KEYWORD_VAR':
             self.case_var()
-        elif self.current_token.token == 'TK_KEYWORD_BEGIN':
-            self.case_begin()
         else:
-            # TODO: Otherwise start performing operations on the "BEGIN" keyword
-            pass
+            self.case_begin()
         return self.byte_array
 
     def case_begin(self):
-        print self.current_token.token
         self.match_token('TK_KEYWORD_BEGIN')
         self.statements()
+        # End statements of any kind of file.
         self.match_token('TK_KEYWORD_END')
         self.match_token('TK_DOT')
         self.match_token('TK_EOF')
-        # TODO: Generate the opcode
-        # self.match_token(byte_manager.op_code.HALT)
+        self.generate_opcode(byte_manager.op_code.HALT)
 
     def statements(self):
         while self.current_token.token != 'TK_EOF':
