@@ -207,6 +207,7 @@ class ParserModule(object):
         self.match_token('TK_IDENTIFIER')
         self.match_token('TK_ASSIGNMENT')
         right_hand_side = self.expression()
+        print 'RHS: %s' % right_hand_side
         if left_hand_side == right_hand_side:
             self.generate_opcode(byte_manager.op_code.POP)
             self.generate_address(symbol_entry.data_pointer)
@@ -215,7 +216,7 @@ class ParserModule(object):
 
     def term(self):
         term = self.factor()
-        while self.current_token.token == 'TK_MULTIPLY' or self.current_token.token == 'TK_DIVIDE' or self.current_token == 'TK_KEYWORD_DIV':
+        while self.current_token.token == 'TK_MULTIPLY' or self.current_token.token == 'TK_DIVIDE' or self.current_token.token == 'TK_KEYWORD_DIV':
             operator = self.current_token.token
             self.match_token(self.current_token.token)
             term_1 = self.factor()
