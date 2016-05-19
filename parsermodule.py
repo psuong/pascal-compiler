@@ -216,17 +216,19 @@ class ParserModule(object):
     def term(self):
         term = self.factor()
         while self.current_token.token == 'TK_MULTIPLY' or self.current_token.token == 'TK_DIVIDE':
+            operator = self.current_token.token
             self.match_token(self.current_token.token)
             term_1 = self.factor()
-            term = self.emit(self.current_token.token, term, term_1)
+            term = self.emit(operator, term, term_1)
         return term
 
     def expression(self):
         term = self.term()
         while self.current_token.token == 'TK_PLUS' or self.current_token.token == 'TK_MINUS':
+            operator = self.current_token.token
             self.match_token(self.current_token.token)
             term_1 = self.term()
-            term = self.emit(self.current_token.token, term, term_1)
+            term = self.emit(operator, term, term_1)
         return term
 
     def factor(self):
@@ -258,7 +260,6 @@ class ParserModule(object):
             return self.generate_pushi_address('TK_DATATYPE_CHARACTER')
 
     def emit(self, operator, term_1, term_2):
-        # Case: +
         if operator == 'TK_PLUS':
             return self.case_emit_plus(term_1, term_2)
         elif operator == 'TK_MINUS':
@@ -303,6 +304,7 @@ class ParserModule(object):
         return 'TK_DATATYPE_BOOL'
 
     def case_emit_plus(self, term_1, term_2):
+        print 'Term: %s \t %s' % (term_1, term_2)
         if term_1 == 'TK_DATATYPE_INTEGER' and term_2 == 'TK_DATATYPE_INTEGER':
             self.generate_opcode(byte_manager.op_code.ADD)
             return 'TK_DATATYPE_INTEGER'
@@ -360,10 +362,23 @@ class ParserModule(object):
         return None
 
     def case_emit_divide(self, term_1, term_2):
-        if term_1 == 'TK_DATATYPE_INTEGER' or term_1 == 'TK_DATATYPE_REAL' and term_2 == 'TK_DATATYPE_INTEGER' or term_2 == 'TK_DATATYPE_REAL':
+        if term_1 == 'TK_DATATYPE_INTEGER' and term_2 == 'TK_DATATYPE_INTEGER':
+            self.generate_opcode(byte_manager.op_code.CVR)
+            self.generate_opcode(byte_manager.op_code.XCHG)
+            self.generate_opcode(byte_manager.op_code.CVR)
+            self.generate_opcode(byte_manager.op_code.XCHG)
             self.generate_opcode(byte_manager.op_code.DIVIDE)
-            return 'TK_DATATYPE_REAL'
-        return None
+        elif term_1 == 'TK_DATATYPE_INTEGER' and term_2 == 'TK_DATATYPE_REAL':
+            self.generate_opcode(byte_manager.op_code.XCHG)
+            self.generate_opcode(byte_manager.op_code.CVR)
+            self.generate_opcode(byte_manager.op_code.XCHG)
+            self.generate_opcode(byte_manager.op_code.DIVIDE)
+        elif term_1 == 'TK_DATATYPE_REAL' and term_2 == 'TK_DATATYPE_INTEGER':
+            self.generate_opcode(byte_manager.op_code.CVR)
+            self.generate_opcode(byte_manager.op_code.DIVIDE)
+        elif term_1 == 'TK_DATATYPE_REAL' and term_2 == 'TK_DATATYPE_REAL':
+            self.generate_opcode(byte_manager.op_code.DIVIDE)
+        return 'TK_DATATYPE_REAL'
 
     def case_emit_or(self, term_1, term_2):
         if term_1 == 'TK_DATATYPE_BOOLEAN' and term_2 == 'TK_DATATYPE_BOOLEAN':

@@ -59,6 +59,21 @@ class EmulatorModule(object):
         elif operator == op_code.NEWLINE:
             self.print_newline()
             self.execute()
+        elif operator == op_code.ADD:
+            self.add()
+            self.execute()
+        elif operator == op_code.SUBTRACT:
+            self.subtract()
+            self.execute()
+        elif operator == op_code.FLOAT_ADD:
+            self.add()
+            self.execute()
+        elif operator == op_code.MULTIPLY:
+            self.multiply()
+            self.execute()
+        elif operator == op_code.DIV:
+            self.divide()
+            self.execute()
         elif operator == op_code.HALT:
             self.echo_print_statements()
             sys.exit()
@@ -77,3 +92,27 @@ class EmulatorModule(object):
     def print_newline(self):
         self.instruction_pointer += 1
         self.echo.append('\n')
+
+    def add(self):
+        self.instruction_pointer += 1
+        left_hand_side = self.data_stack.pop()
+        right_hand_side = self.data_stack.pop()
+        self.data_stack.append(left_hand_side + right_hand_side)
+
+    def subtract(self):
+        self.instruction_pointer += 1
+        left_hand_side = self.data_stack.pop()
+        right_hand_side = self.data_stack.pop()
+        self.data_stack.append(right_hand_side - left_hand_side)
+
+    def multiply(self):
+        self.instruction_pointer += 1
+        left_hand_side = self.data_stack.pop()
+        right_hand_side = self.data_stack.pop()
+        self.data_stack.append(right_hand_side * left_hand_side)
+
+    def divide(self):
+        self.instruction_pointer += 1
+        left_hand_side = self.data_stack.pop()
+        right_hand_side = self.data_stack.pop()
+        self.data_stack.append(right_hand_side / left_hand_side)
