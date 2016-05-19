@@ -3,7 +3,7 @@ program addition;
     var x : integer;
     var y : integer;
     var a : integer;
-    var b : real;
+    var b : integer;
 begin
     z := 13 + 666;
     x := 10 - 25;
