@@ -7,6 +7,11 @@ CONST_TK_ID = 'TK_IDENTIFIER'
 TK_OPERATOR = 'TK_OPERATOR'
 
 
+def print_token_list():
+    for each in TOKEN_LIST:
+        print 'ID: %s, Value: %s' % (each.token, each.value)
+
+
 class TokenContainer(object):
     def __init__(self, token, value):
         self.token = token
@@ -128,9 +133,6 @@ class Scanner:
                 self.read_string(char, index)
 
         TOKEN_LIST.append(TokenContainer(self.token.TK_FILE, 'EOF'))
-
-        for each in TOKEN_LIST:
-            print 'ID: %s, Value: %s' % (each.token, each.value)
 
     def get_initial_state(self, char):
         """

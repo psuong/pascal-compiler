@@ -1,21 +1,32 @@
 # mv@panix.com : zip
-from tokenizer import FileManager, Scanner, TOKEN_LIST
+from tokenizer import FileManager, Scanner, TOKEN_LIST, print_token_list
 from parsermodule import ParserModule
 from emulator import EmulatorModule
 
 
 def load_pascal_file():
+    # Create the file manager
     pascal_file = FileManager()
-    scanner = Scanner()
-    parser = ParserModule(iter(TOKEN_LIST))
 
+    # Create the scanner
+    scanner = Scanner()
+
+    # Assign the memory mapped file from the FileManager
     scanner.memory_mapped_file = pascal_file.pascal_file
 
+    # Read the memory file and produce tokens
     scanner.read_memory_file()
+
+    # Assign the token list to the parser
+    parser = ParserModule(iter(TOKEN_LIST))
+
+    # Parse the tokens
     parser.parse()
 
+    # Create the emulator module
     emulator = EmulatorModule(parser.byte_array)
 
+    # Emulate the compiler
     emulator.execute()
 
 

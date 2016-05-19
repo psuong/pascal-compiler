@@ -1,4 +1,4 @@
-program addition;
+program mathematicalOperations;
     var z : integer;
     var x : integer;
     var y : integer;
