@@ -5,6 +5,7 @@ program mathematicalOperations;
     var a : integer;
     var b : integer;
     var c : real;
+    var d : real;
 begin
     z := 13 + 666;
     x := 10 - 25;
@@ -12,6 +13,7 @@ begin
     a := 13 * 13;
     b := 169 div 13;
     c := 13 / 4;
+    d := 3 + 2 * 6 / 4 - 1
 
     writeln(z);
     writeln(x);
@@ -19,4 +21,5 @@ begin
     writeln(a);
     writeln(b);
     writeln(c);
+    writeln(d);
 end.

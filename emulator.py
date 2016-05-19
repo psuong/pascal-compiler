@@ -73,6 +73,9 @@ class EmulatorModule(object):
         elif operator == OpCode.FLOAT_ADD:
             self.add()
             self.execute()
+        elif operator == OpCode.FLOAT_SUBTRACT:
+            self.subtract()
+            self.execute()
         elif operator == OpCode.MULTIPLY:
             self.multiply()
             self.execute()
