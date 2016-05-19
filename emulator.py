@@ -74,6 +74,9 @@ class EmulatorModule(object):
         elif operator == op_code.DIV:
             self.divide()
             self.execute()
+        elif operator == op_code.DIVIDE:
+            self.divide()
+            self.execute()
         elif operator == op_code.HALT:
             self.echo_print_statements()
             sys.exit()

@@ -93,12 +93,16 @@ class FileManager:
             memory_mapped_file = mmap(pascal_file.fileno(), 0)
         return memory_mapped_file
 
+    def iterate_mem_file(self):
+        for each in self.pascal_file:
+            print each
+
 
 class Scanner:
     def __init__(self):
         self.memory_mapped_file = None
         self.current_state = None
-        self.delimiter_chars = ' \n\t'
+        self.delimiter_chars = ' \n\r\t'
         self.special_chars = ',./<>?:;\[]{}!@#$%^&*()-_+='
         self.word = ''
         self.scanner_state = Enum('ScannerStates', 'letter digit operator delimiter string')
@@ -183,7 +187,6 @@ class Scanner:
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
-            # print 'Next State: %s' % self.get_next_state(index)
 
     def read_number(self, char, index):
         """
@@ -248,7 +251,7 @@ class Scanner:
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
             self.current_state = self.get_next_state(index)
-        elif char in self.delimiter_chars:
+        elif char in self.delimiter_chars or char == '':
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = ''
             self.current_state = self.get_next_state(index)
