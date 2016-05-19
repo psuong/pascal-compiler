@@ -1,4 +1,4 @@
-class op_code:
+class OpCode:
     PUSHI = 0
     PUSH = 1
     POP = 2
@@ -15,7 +15,7 @@ class op_code:
     JMP = 13
     JFALSE = 14
     JTRUE = 15
-    HALT = 16
+    STOP = 16
     PRINT = 17
     PRINT_I = 18
     PRINT_C = 19
@@ -36,6 +36,46 @@ class op_code:
     LESS_THAN_EQ = 34
     POP_CHAR = 35
     PUSH_CHAR = 36
+
+op_code_dict = {
+    0: 'PUSHI',
+    1: 'PUSH',
+    2: 'POP',
+    3: 'ADD',
+    4: 'SUBTRACT',
+    5: 'MULTIPLY',
+    6: 'DIVIDE',
+    7: 'DIV',
+    8: 'GREATER_THAN',
+    9: 'GREATER_THAN_EQ',
+    10: 'EQUAL',
+    11: 'NOT_EQUAL',
+    12: 'DUP',
+    13: 'JMP',
+    14: 'JFALSE',
+    15: 'JTRUE',
+    16: 'STOP',
+    17: 'PRINT',
+    18: 'PRINT_I',
+    19: 'PRINT_C',
+    20: 'PRINT_B',
+    21: 'PRINT_R',
+    22: 'NEWLINE',
+    23: 'NOT',
+    24: 'FLOAT_ADD',
+    25: 'FLOAT_SUBTRACT',
+    26: 'FLOAT_MULTIPLY',
+    27: 'FLOAT_DIVIDE',
+    28: 'OR',
+    29: 'PRINT_I_LIT',
+    30: 'CVR',
+    31: 'XCHG',
+    32: 'PRINT_STRING_LIT',
+    33: 'LESS_THAN',
+    34: 'LESS_THAN_EQ',
+    35: 'POP_CHAR',
+    36: 'PUSH_CHAR'
+}
 
 instruction_length = 5
 

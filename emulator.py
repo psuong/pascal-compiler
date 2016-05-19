@@ -1,5 +1,5 @@
 from parsermodule import Error, ParserModule
-from byte_manager import op_code, byte_packer, byte_unpacker
+from byte_manager import OpCode, byte_packer, byte_unpacker, op_code_dict
 import sys
 
 
@@ -16,6 +16,12 @@ class EmulatorModule(object):
         print '============\nStandard Out\n============'
         for each in self.echo:
             print each
+
+    def print_instruction(self, instruction_pointer, operator):
+        if instruction_pointer < 10:
+            print 'Instruction Pointer: 0%s \t | \tMatching: %s' % (instruction_pointer, op_code_dict[operator])
+        else:
+            print 'Instruction Pointer: %s \t | \tMatching: %s' % (instruction_pointer, op_code_dict[operator])
 
     def get_immediate_value(self):
         immediate_value = bytearray()
@@ -41,43 +47,51 @@ class EmulatorModule(object):
 
     def execute(self):
         operator = self.byte_array[self.instruction_pointer]
-        print 'Instruction Pointer: %s' % self.instruction_pointer
-        print 'Matching: %s' % operator
+        self.print_instruction(self.instruction_pointer, operator)
 
-        if operator == op_code.PUSHI:
+        if operator == OpCode.PUSHI:
             self.push_i()
             self.execute()
-        elif operator == op_code.POP:
+        elif operator == OpCode.POP:
             self.pop()
             self.execute()
-        elif operator == op_code.PUSH:
+        elif operator == OpCode.PUSH:
             self.push_i()
             self.execute()
-        elif operator == op_code.PRINT_I:
+        elif operator == OpCode.PRINT_I:
             self.print_i()
             self.execute()
-        elif operator == op_code.NEWLINE:
+        elif operator == OpCode.NEWLINE:
             self.print_newline()
             self.execute()
-        elif operator == op_code.ADD:
+        elif operator == OpCode.ADD:
             self.add()
             self.execute()
-        elif operator == op_code.SUBTRACT:
+        elif operator == OpCode.SUBTRACT:
             self.subtract()
             self.execute()
-        elif operator == op_code.FLOAT_ADD:
+        elif operator == OpCode.FLOAT_ADD:
             self.add()
             self.execute()
-        elif operator == op_code.MULTIPLY:
+        elif operator == OpCode.MULTIPLY:
             self.multiply()
             self.execute()
-        elif operator == op_code.DIV:
+        elif operator == OpCode.DIV:
             self.divide()
             self.execute()
-        elif operator == op_code.DIVIDE:
+        elif operator == OpCode.DIVIDE:
             self.divide()
             self.execute()
-        elif operator == op_code.HALT:
+        elif operator == OpCode.CVR:
+            self.convert_cvr()
+            self.execute()
+        elif operator == OpCode.XCHG:
+            self.exchange_xchg()
+            self.execute()
+        elif operator == OpCode.PRINT_R:
+            self.print_r()
+            self.execute()
+        elif operator == OpCode.STOP:
             self.echo_print_statements()
             sys.exit()
         else:
@@ -89,6 +103,10 @@ class EmulatorModule(object):
         self.data_stack.append(self.get_immediate_value())
 
     def print_i(self):
+        self.instruction_pointer += 1
+        self.echo.append(self.get_immediate_data())
+
+    def print_r(self):
         self.instruction_pointer += 1
         self.echo.append(self.get_immediate_data())
 
@@ -119,3 +137,15 @@ class EmulatorModule(object):
         left_hand_side = self.data_stack.pop()
         right_hand_side = self.data_stack.pop()
         self.data_stack.append(right_hand_side / left_hand_side)
+
+    def convert_cvr(self):
+        self.instruction_pointer += 1
+        popped = self.data_stack.pop()
+        self.data_stack.append(float(popped))
+
+    def exchange_xchg(self):
+        self.instruction_pointer += 1
+        top = self.data_stack.pop()
+        bottom = self.data_stack.pop()
+        self.data_stack.append(top)
+        self.data_stack.append(bottom)

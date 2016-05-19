@@ -11,7 +11,7 @@ begin
     y := 666 - 17;
     a := 13 * 13;
     b := 169 div 13;
-    c := 15.5 / 3.0;
+    c := 13 / 4;
 
     writeln(z);
     writeln(x);
