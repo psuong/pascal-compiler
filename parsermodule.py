@@ -215,13 +215,11 @@ class ParserModule(object):
 
     def term(self):
         term = self.factor()
-        print 'TOKEN: %s' % self.current_token.token
         while self.current_token.token == 'TK_MULTIPLY' or self.current_token.token == 'TK_DIVIDE' or self.current_token == 'TK_KEYWORD_DIV':
             operator = self.current_token.token
             self.match_token(self.current_token.token)
             term_1 = self.factor()
             term = self.emit(operator, term, term_1)
-            print 'Term: %s' % term
         return term
 
     def expression(self):
@@ -306,7 +304,6 @@ class ParserModule(object):
         return 'TK_DATATYPE_BOOL'
 
     def case_emit_plus(self, term_1, term_2):
-        print 'Term: %s \t %s' % (term_1, term_2)
         if term_1 == 'TK_DATATYPE_INTEGER' and term_2 == 'TK_DATATYPE_INTEGER':
             self.generate_opcode(byte_manager.op_code.ADD)
             return 'TK_DATATYPE_INTEGER'
