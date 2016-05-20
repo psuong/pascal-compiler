@@ -17,6 +17,9 @@ def load_pascal_file():
     # Read the memory file and produce tokens
     scanner.read_memory_file()
 
+    # Print the token list
+    print_token_list()
+
     # Assign the token list to the parser
     parser = ParserModule(iter(TOKEN_LIST))
 

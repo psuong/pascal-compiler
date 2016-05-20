@@ -105,6 +105,8 @@ class ParserModule(object):
                 self.case_assignment()
             elif token_type == 'TK_KEYWORD_WRITELN':
                 self.case_writeln()
+            elif token_type == 'TK_KEYWORD_IF':
+                pass
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
             # End case
@@ -175,7 +177,7 @@ class ParserModule(object):
                 self.generate_opcode(byte_manager.OpCode.PRINT_I_LIT)
                 self.generate_address(int(self.current_token.value))
                 self.match_token('TK_DATATYPE_INTEGER')
-            if self.current_token.token == 'TK_IDENTIFIER':
+            elif self.current_token.token == 'TK_IDENTIFIER':
                 symbol_entry = self.find_symbol_table_entry(self.current_token.value)
                 term = self.expression()
                 if term == 'TK_DATATYPE_INTEGER':
@@ -200,6 +202,31 @@ class ParserModule(object):
                 return
             else:
                 raise Error('Found %s, not comma or close parenthesis!' % self.current_token.value)
+
+    def case_if(self):
+        self.match_token('TK_KEYWORD_IF')
+        self.if_condition()
+        self.match_token('TK_KEYWORD_THEN')
+        self.generate_opcode(byte_manager.OpCode.JFALSE)
+        hole = self.instruction_pointer
+        self.generate_address(0)
+        self.statements()
+        if self.current_token.token == 'TK_KEYWORD_ELSE':
+            self.generate_opcode(byte_manager.OpCode.JMP)
+            hole_2 = self.instruction_pointer
+            self.generate_address(0)
+            save = self.instruction_pointer
+            self.instruction_pointer = hole
+            self.generate_address(save)
+            self.instruction_pointer = save
+            hole = hole_2
+            self.match_token('TK_KEYWORD_ELSE')
+            self.statements()
+        save = self.instruction_pointer
+        self.instruction_pointer = hole
+        self.generate_address(save)
+        self.instruction_pointer = save
+
 
     def case_assignment(self):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)
@@ -384,3 +411,11 @@ class ParserModule(object):
             self.generate_opcode(byte_manager.OpCode.OR)
             return 'TK_DATATYPE_BOOLEAN'
         return None
+
+    def if_condition(self):
+        term = self.expression()
+        conditional_operator = self.current_token.value
+        try:
+            byte_manager.conditionals[conditional_operator]
+        except:
+            pass
