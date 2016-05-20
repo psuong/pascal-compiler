@@ -9,6 +9,4 @@ begin
 
     if x > y then
         writeln(y);
-    else
-        writeln(z);
-end.        
+end.

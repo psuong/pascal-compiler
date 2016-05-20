@@ -81,9 +81,9 @@ instruction_length = 5
 
 conditionals = {
     '<': True,
+    '>': True,
     '<>': True,
     '<=': True,
-    '>': True,
     '=': True
 }
 

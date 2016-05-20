@@ -106,7 +106,7 @@ class ParserModule(object):
             elif token_type == 'TK_KEYWORD_WRITELN':
                 self.case_writeln()
             elif token_type == 'TK_KEYWORD_IF':
-                pass
+                self.case_if()
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
             # End case
@@ -227,7 +227,6 @@ class ParserModule(object):
         self.generate_address(save)
         self.instruction_pointer = save
 
-
     def case_assignment(self):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)
         left_hand_side = symbol_entry.data_type
@@ -301,17 +300,17 @@ class ParserModule(object):
         elif operator == 'TK_KEYWORD_OR':
             return self.case_emit_or(term_1, term_2)
         elif operator == 'TK_GREATER_EQ':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.GREATER_THAN_EQ, term_1, term_2)
         elif operator == 'TK_GREATER':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.GREATER_THAN, term_1, term_2)
         elif operator == 'TK_LESS_EQ':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.LESS_THAN_EQ, term_1, term_2)
         elif operator == 'TK_LESS':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.LESS_THAN, term_1, term_2)
         elif operator == 'TK_EQUAL':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.EQUAL, term_1, term_2)
         elif operator == 'TK_NOT_EQUAL':
-            return self.compare_terms(operator, term_1, term_2)
+            return self.compare_terms(byte_manager.OpCode.NOT_EQUAL, term_1, term_2)
         else:
             raise Error('Emit could not match operator: %s' % operator)
 
@@ -415,7 +414,11 @@ class ParserModule(object):
     def if_condition(self):
         term = self.expression()
         conditional_operator = self.current_token.value
-        try:
-            byte_manager.conditionals[conditional_operator]
-        except:
-            pass
+        if byte_manager.conditionals.get(conditional_operator) is None:
+            raise Error('Conditional operator, [%s], not found!' % conditional_operator)
+        else:
+            token = self.current_token.token
+            self.match_token(self.current_token.token)
+            term_2 = self.term()
+            term = self.emit(token, term, term_2)
+        return term
