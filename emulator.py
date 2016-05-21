@@ -115,6 +115,9 @@ class EmulatorModule(object):
         elif operator == OpCode.EQUAL:
             self.equal()
             self.execute()
+        elif operator == OpCode.NOT_EQUAL:
+            self.not_equal()
+            self.execute()
         elif operator == OpCode.JFALSE:
             self.jump_false()
             self.execute()
@@ -226,3 +229,9 @@ class EmulatorModule(object):
         lhs = self.data_stack.pop()
         rhs = self.data_stack.pop()
         self.data_stack.append(lhs == rhs)
+
+    def not_equal(self):
+        self.instruction_pointer += 1
+        lhs = self.data_stack.pop()
+        rhs = self.data_stack.pop()
+        self.data_stack.append(lhs != rhs)
