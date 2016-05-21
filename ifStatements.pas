@@ -11,4 +11,9 @@ begin
         writeln(z);
     else
         writeln(y);
+
+    if z < x then
+        writeln(x);
+    else
+        writeln(z);
 end.
