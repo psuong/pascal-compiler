@@ -226,6 +226,15 @@ class Scanner:
                 TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['integer'], self.word))
                 self.word = ''
                 self.current_state = self.get_next_state(index)
+        elif char in self.special_chars:
+            if '.' in self.word:
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['real'], self.word))
+                self.word = char
+                self.current_state = self.get_next_state(index)
+            else:
+                TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['integer'], self.word))
+                self.word = char
+                self.current_state = self.get_next_state(index)
 
     def read_operator(self, char, index):
         """
@@ -252,7 +261,7 @@ class Scanner:
         elif char.isdigit():
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = char
-            self.current_state = self.get_next_state(index)
+            self.current_state = self.scanner_state.digit
         elif char in self.delimiter_chars or char == '':
             TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
             self.word = ''

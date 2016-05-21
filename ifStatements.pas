@@ -3,10 +3,12 @@ program ifStatements;
     var y : integer;
     var z : integer;
 begin
-    x := 6;
+    x := 5;
     y := 666;
-    z := 13;
+    z := 3;
 
     if x > y then
+        writeln(z);
+    else
         writeln(y);
 end.

@@ -34,7 +34,7 @@ class ParserModule(object):
         :return: None
         """
         if self.current_token.token == token_type:
-            print 'Matched: %s, %s ' % (token_type, self.current_token.token)
+            print 'Matched: %s, %s ' % (token_type, self.current_token.value)
             try:
                 # Get the next token list if available
                 self.current_token = self.token_list.next()
@@ -100,6 +100,7 @@ class ParserModule(object):
 
     def statements(self):
         while self.current_token.token != 'TK_EOF':
+            # print self.current_token.token
             token_type = self.current_token.token
             if token_type == 'TK_IDENTIFIER':
                 self.case_assignment()
@@ -111,6 +112,8 @@ class ParserModule(object):
                 self.match_token('TK_SEMI_COLON')
             # End case
             elif token_type == 'TK_KEYWORD_END':
+                return
+            else:
                 return
 
     def case_var(self):

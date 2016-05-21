@@ -64,6 +64,9 @@ class EmulatorModule(object):
         elif operator == OpCode.NEWLINE:
             self.print_newline()
             self.execute()
+        elif operator == OpCode.PRINT_I_LIT:
+            self.print_i()
+            self.execute()
         elif operator == OpCode.ADD:
             self.add()
             self.execute()
@@ -97,8 +100,20 @@ class EmulatorModule(object):
         elif operator == OpCode.GREATER_THAN:
             self.greater_than()
             self.execute()
+        elif operator == OpCode.GREATER_THAN_EQ:
+            self.greater_than_equal()
+            self.execute()
+        elif operator == OpCode.LESS_THAN:
+            self.less_than()
+            self.execute()
+        elif operator == OpCode.LESS_THAN_EQ:
+            self.less_than_eq()
+            self.execute()
         elif operator == OpCode.JFALSE:
             self.jump_false()
+            self.execute()
+        elif operator == OpCode.JMP:
+            self.jump()
             self.execute()
         elif operator == OpCode.STOP:
             self.echo_print_statements()
@@ -114,6 +129,11 @@ class EmulatorModule(object):
     def print_i(self):
         self.instruction_pointer += 1
         self.echo.append(self.get_immediate_data())
+
+    def print_i_literal(self):
+        self.instruction_pointer += 1
+        value = self.get_immediate_value()
+        self.echo.append(value)
 
     def print_r(self):
         self.instruction_pointer += 1
@@ -161,13 +181,11 @@ class EmulatorModule(object):
 
     def greater_than(self):
         self.instruction_pointer += 1
-        self.data_stack.append(self.data_stack.pop() > self.data_stack.pop())
+        self.data_stack.append(self.data_stack.pop() < self.data_stack.pop())
 
     def greater_than_equal(self):
         self.instruction_pointer += 1
-        left_hand_side = self.data_stack.pop()
-        right_hand_side = self.data_stack.pop()
-        self.data_stack.append(left_hand_side >= right_hand_side)
+        self.data_stack.append(self.data_stack.pop() <= self.data_stack.pop())
 
     def jump_false(self):
         self.instruction_pointer += 1
@@ -175,4 +193,16 @@ class EmulatorModule(object):
             self.get_immediate_value()
         else:
             value = self.get_immediate_value()
-            self.instruction_pointer = self.get_immediate_value()
+            self.instruction_pointer = value
+
+    def jump(self):
+        self.instruction_pointer += 1
+        self.instruction_pointer = self.get_immediate_value()
+
+    def less_than(self):
+        self.instruction_pointer += 1
+        self.data_stack.append(self.data_stack.pop() < self.data_stack.pop())
+
+    def less_than_eq(self):
+        self.instruction_pointer += 1
+        self.data_stack.append(self.data_stack.pop() >= self.data_stack.pop())
