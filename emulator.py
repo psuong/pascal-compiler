@@ -225,5 +225,4 @@ class EmulatorModule(object):
         self.instruction_pointer += 1
         lhs = self.data_stack.pop()
         rhs = self.data_stack.pop()
-        print 'equal', lhs != rhs, lhs, rhs
-        self.data_stack.append(lhs != rhs)
+        self.data_stack.append(lhs == rhs)
