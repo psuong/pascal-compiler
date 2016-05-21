@@ -2,18 +2,17 @@ program ifStatements;
     var x : integer;
     var y : integer;
     var z : integer;
+    var a : integer;
+    var b : integer;
 begin
-    x := 5;
-    y := 666;
+    x := 0;
+    y := 13;
     z := 3;
+    a := 9;
+    b := 15;
 
-    if x > y then
-        writeln(z);
-    else
-        writeln(y);
-
-    if z < x then
-        writeln(x);
+    if (b + y) <= b then
+        writeln(a);
     else
         writeln(z);
 end.

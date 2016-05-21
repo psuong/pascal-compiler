@@ -19,15 +19,18 @@ class EmulatorModule(object):
 
     def print_instruction(self, instruction_pointer, operator):
         if instruction_pointer < 10:
-            print 'Instruction Pointer: 0%s \t | \tMatching: %s' % (instruction_pointer, op_code_dict[operator])
+            print 'Instruction Pointer: 0%s \t | \tMatching: %s, %s' % (
+                instruction_pointer, op_code_dict[operator], operator)
         else:
-            print 'Instruction Pointer: %s \t | \tMatching: %s' % (instruction_pointer, op_code_dict[operator])
+            print 'Instruction Pointer: %s \t | \tMatching: %s, %s' % (
+                instruction_pointer, op_code_dict[operator], operator)
 
     def get_immediate_value(self):
         immediate_value = bytearray()
         for index in range(4):
             immediate_value.append(self.byte_array[self.instruction_pointer])
             self.instruction_pointer += 1
+        value = byte_unpacker(immediate_value)
         return byte_unpacker(immediate_value)
 
     def get_immediate_data(self):
@@ -109,6 +112,9 @@ class EmulatorModule(object):
         elif operator == OpCode.LESS_THAN_EQ:
             self.less_than_eq()
             self.execute()
+        elif operator == OpCode.EQUAL:
+            self.equal()
+            self.execute()
         elif operator == OpCode.JFALSE:
             self.jump_false()
             self.execute()
@@ -181,11 +187,15 @@ class EmulatorModule(object):
 
     def greater_than(self):
         self.instruction_pointer += 1
-        self.data_stack.append(self.data_stack.pop() < self.data_stack.pop())
+        lhs = self.data_stack.pop()
+        rhs = self.data_stack.pop()
+        self.data_stack.append(rhs > lhs)
 
     def greater_than_equal(self):
         self.instruction_pointer += 1
-        self.data_stack.append(self.data_stack.pop() <= self.data_stack.pop())
+        rhs = self.data_stack.pop()
+        lhs = self.data_stack.pop()
+        self.data_stack.append(lhs >= rhs)
 
     def jump_false(self):
         self.instruction_pointer += 1
@@ -201,8 +211,19 @@ class EmulatorModule(object):
 
     def less_than(self):
         self.instruction_pointer += 1
-        self.data_stack.append(self.data_stack.pop() < self.data_stack.pop())
+        rhs = self.data_stack.pop()
+        lhs = self.data_stack.pop()
+        self.data_stack.append(lhs < rhs)
 
     def less_than_eq(self):
         self.instruction_pointer += 1
-        self.data_stack.append(self.data_stack.pop() >= self.data_stack.pop())
+        rhs = self.data_stack.pop()
+        lhs = self.data_stack.pop()
+        self.data_stack.append(lhs <= rhs)
+
+    def equal(self):
+        self.instruction_pointer += 1
+        lhs = self.data_stack.pop()
+        rhs = self.data_stack.pop()
+        print 'equal', lhs != rhs, lhs, rhs
+        self.data_stack.append(lhs != rhs)

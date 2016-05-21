@@ -422,6 +422,6 @@ class ParserModule(object):
         else:
             token = self.current_token.token
             self.match_token(self.current_token.token)
-            term_2 = self.term()
-            term = self.emit(token, term, term_2)
+            term_1 = self.term()
+            term = self.emit(token, term, term_1)
         return term
