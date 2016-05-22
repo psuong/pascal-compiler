@@ -110,6 +110,8 @@ class ParserModule(object):
                 self.case_if()
             elif token_type == 'TK_KEYWORD_WHILE':
                 self.case_while()
+            elif token_type == 'TK_KEYWORD_FOR':
+                self.case_for()
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
             # End case
@@ -250,6 +252,77 @@ class ParserModule(object):
         self.instruction_pointer = hole
         self.generate_address(save)
         self.instruction_pointer = save
+
+    def case_for(self):
+        self.match_token('TK_KEYWORD_FOR')
+        value = self.current_token.value
+        self.case_assignment()
+        entry = self.instruction_pointer
+        symbol_entry = self.find_symbol_table_entry(value)
+
+        if self.current_token.token == 'TK_KEYWORD_TO':
+            self.match_token('TK_KEYWORD_TO')
+            self.generate_opcode(byte_manager.OpCode.PUSH)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(self.current_token.value)
+            self.generate_opcode(byte_manager.OpCode.LESS_THAN_EQ)
+            self.match_token('TK_DATATYPE_INTEGER')
+            self.match_token('TK_KEYWORD_DO')
+            self.generate_opcode(byte_manager.OpCode.JFALSE)
+            hole = self.instruction_pointer
+            self.generate_address(0)
+
+            self.match_token('TK_KEYWORD_BEGIN')
+            self.statements()
+            self.match_token('TK_KEYWORD_END')
+            self.match_token('TK_SEMI_COLON')
+
+            self.generate_opcode(byte_manager.OpCode.PUSH)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(1)
+            self.generate_opcode(byte_manager.OpCode.ADD)
+            self.generate_opcode(byte_manager.OpCode.POP)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.JMP)
+            self.generate_address(entry)
+            save = self.instruction_pointer
+            self.instruction_pointer = hole
+            self.generate_address(save)
+            self.instruction_pointer = save
+
+        elif self.current_token.token == 'TK_KEYWORD_DOWNTO':
+            self.match_token('TK_KEYWORD_DOWNTO')
+            self.generate_opcode(byte_manager.OpCode.PUSH)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(self.current_token.value)
+            self.generate_opcode(byte_manager.OpCode.GREATER_THAN_EQ)
+            self.match_token('TK_DATATYPE_INTEGER')
+            self.match_token('TK_KEYWORD_DO')
+            self.generate_opcode(byte_manager.OpCode.JFALSE)
+            hole = self.instruction_pointer
+            self.generate_address(0)
+
+            self.match_token('TK_KEYWORD_BEGIN')
+            self.statements()
+            self.match_token('TK_KEYWORD_END')
+            self.match_token('TK_SEMI_COLON')
+
+            self.generate_opcode(byte_manager.OpCode.PUSH)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(1)
+            self.generate_opcode(byte_manager.OpCode.SUBTRACT)
+            self.generate_opcode(byte_manager.OpCode.POP)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.JMP)
+            self.generate_address(entry)
+            save = self.instruction_pointer
+            self.instruction_pointer = hole
+            self.generate_address(save)
+            self.instruction_pointer = save
 
     def case_assignment(self):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)

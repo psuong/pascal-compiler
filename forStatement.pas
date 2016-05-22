@@ -2,11 +2,15 @@ program forStatement;
     var x : integer;
     var y : integer;
 begin
-    x := 0;
-
-    for y := 10 to 0 do
+    for y := 0 to 10 do
     begin
         writeln(y);
-        y := y - 1;
+        y := y + 1;
+    end;
+
+    for x := 10 downto 0 do
+    begin
+        writeln(x);
+        x := x - 1;
     end;
 end.

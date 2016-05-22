@@ -167,7 +167,7 @@ class EmulatorModule(object):
         self.instruction_pointer += 1
         rhs = self.data_stack.pop()
         lhs = self.data_stack.pop()
-        self.data_stack.append(rhs - lhs)
+        self.data_stack.append(lhs - rhs)
 
     def multiply(self):
         self.instruction_pointer += 1

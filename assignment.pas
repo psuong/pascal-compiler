@@ -4,4 +4,7 @@ program assignment;
 begin
     x := 20;
     y := 30;
+
+    y := x - 2;
+    writeln(y);
 end.
