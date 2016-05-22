@@ -31,7 +31,7 @@ class EmulatorModule(object):
             immediate_value.append(self.byte_array[self.instruction_pointer])
             self.instruction_pointer += 1
         value = byte_unpacker(immediate_value)
-        return byte_unpacker(immediate_value)
+        return value
 
     def get_immediate_data(self):
         """
@@ -59,7 +59,7 @@ class EmulatorModule(object):
             self.pop()
             self.execute()
         elif operator == OpCode.PUSH:
-            self.push_i()
+            self.push()
             self.execute()
         elif operator == OpCode.PRINT_I:
             self.print_i()
@@ -135,6 +135,10 @@ class EmulatorModule(object):
         self.instruction_pointer += 1
         self.data_stack.append(self.get_immediate_value())
 
+    def push(self):
+        self.instruction_pointer += 1
+        self.data_stack.append(self.get_immediate_data())
+
     def print_i(self):
         self.instruction_pointer += 1
         self.echo.append(self.get_immediate_data())
@@ -154,15 +158,16 @@ class EmulatorModule(object):
 
     def add(self):
         self.instruction_pointer += 1
-        left_hand_side = self.data_stack.pop()
-        right_hand_side = self.data_stack.pop()
-        self.data_stack.append(left_hand_side + right_hand_side)
+        lhs = self.data_stack.pop()
+        rhs = self.data_stack.pop()
+        print lhs + rhs, lhs, rhs
+        self.data_stack.append(lhs + rhs)
 
     def subtract(self):
         self.instruction_pointer += 1
-        left_hand_side = self.data_stack.pop()
-        right_hand_side = self.data_stack.pop()
-        self.data_stack.append(right_hand_side - left_hand_side)
+        rhs = self.data_stack.pop()
+        lhs = self.data_stack.pop()
+        self.data_stack.append(rhs - lhs)
 
     def multiply(self):
         self.instruction_pointer += 1

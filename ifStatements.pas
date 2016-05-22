@@ -11,7 +11,7 @@ begin
     a := 9;
     b := 15;
 
-    if (b + y) <= b then
+    if (b + y) >= b then
         writeln(a);
     else
         writeln(z);

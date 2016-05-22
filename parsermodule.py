@@ -108,6 +108,8 @@ class ParserModule(object):
                 self.case_writeln()
             elif token_type == 'TK_KEYWORD_IF':
                 self.case_if()
+            elif token_type == 'TK_KEYWORD_WHILE':
+                self.case_while()
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
             # End case
@@ -208,7 +210,7 @@ class ParserModule(object):
 
     def case_if(self):
         self.match_token('TK_KEYWORD_IF')
-        self.if_condition()
+        self.conditional_statement()
         self.match_token('TK_KEYWORD_THEN')
         self.generate_opcode(byte_manager.OpCode.JFALSE)
         hole = self.instruction_pointer
@@ -225,6 +227,25 @@ class ParserModule(object):
             hole = hole_2
             self.match_token('TK_KEYWORD_ELSE')
             self.statements()
+        save = self.instruction_pointer
+        self.instruction_pointer = hole
+        self.generate_address(save)
+        self.instruction_pointer = save
+
+    def case_while(self):
+        self.match_token('TK_KEYWORD_WHILE')
+        entry = self.instruction_pointer
+        self.conditional_statement()
+        self.match_token('TK_KEYWORD_DO')
+        self.generate_opcode(byte_manager.OpCode.JFALSE)
+        hole = self.instruction_pointer
+        self.generate_address(0)
+        self.match_token('TK_KEYWORD_BEGIN')
+        self.statements()
+        self.match_token('TK_KEYWORD_END')
+        self.match_token('TK_SEMI_COLON')
+        self.generate_opcode(byte_manager.OpCode.JMP)
+        self.generate_address(entry)
         save = self.instruction_pointer
         self.instruction_pointer = hole
         self.generate_address(save)
@@ -255,7 +276,7 @@ class ParserModule(object):
         term = self.term()
         while self.current_token.token == 'TK_PLUS' or self.current_token.token == 'TK_MINUS':
             operator = self.current_token.token
-            self.match_token(self.current_token.token)
+            self.match_token(operator)
             term_1 = self.term()
             term = self.emit(operator, term, term_1)
         return term
@@ -264,10 +285,11 @@ class ParserModule(object):
         token = self.current_token.token
         if token == 'TK_IDENTIFIER':
             symbol_entry = self.find_symbol_table_entry(self.current_token.value)
-            self.generate_opcode(byte_manager.OpCode.PUSHI)
-            self.generate_address(symbol_entry.data_pointer)
-            self.match_token('TK_IDENTIFIER')
-            return symbol_entry.data_type
+            if symbol_entry.object_type == symbol.VARIABLE:
+                self.generate_opcode(byte_manager.OpCode.PUSH)
+                self.generate_address(symbol_entry.data_pointer)
+                self.match_token('TK_IDENTIFIER')
+                return symbol_entry.data_type
         elif token == 'TK_KEYWORD_NOT':
             self.generate_address(byte_manager.OpCode.NOT)
             self.match_token('TK_KEYWORD_NOT')
@@ -414,14 +436,14 @@ class ParserModule(object):
             return 'TK_DATATYPE_BOOLEAN'
         return None
 
-    def if_condition(self):
+    def conditional_statement(self):
         term = self.expression()
         conditional_operator = self.current_token.value
         if byte_manager.conditionals.get(conditional_operator) is None:
             raise Error('Conditional operator, [%s], not found!' % conditional_operator)
         else:
             token = self.current_token.token
-            self.match_token(self.current_token.token)
+            self.match_token(token)
             term_1 = self.term()
             term = self.emit(token, term, term_1)
         return term
