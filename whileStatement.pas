@@ -7,6 +7,10 @@ begin
     y := 5;
     z := 20;
 
-    x := z + 1;
+    while x < 10 do
+        begin
+            x := x + 1;
+            writeln(x);
+        end;
     writeln(x);
 end.
