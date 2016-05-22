@@ -112,6 +112,8 @@ class ParserModule(object):
                 self.case_while()
             elif token_type == 'TK_KEYWORD_FOR':
                 self.case_for()
+            elif token_type == 'TK_KEYWORD_REPEAT':
+                self.case_repeat()
             elif token_type == 'TK_SEMI_COLON':
                 self.match_token('TK_SEMI_COLON')
             # End case
@@ -323,6 +325,15 @@ class ParserModule(object):
             self.instruction_pointer = hole
             self.generate_address(save)
             self.instruction_pointer = save
+
+    def case_repeat(self):
+        self.match_token('TK_KEYWORD_REPEAT')
+        entry = self.instruction_pointer
+        self.statements()
+        self.match_token('TK_KEYWORD_UNTIL')
+        self.conditional_statement()
+        self.generate_opcode(byte_manager.OpCode.JFALSE)
+        self.generate_address(entry)
 
     def case_assignment(self):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)
