@@ -18,7 +18,7 @@ This will install Aenum into your Python Package Manager.
 All pascal files are located in the `pascal_files` directory. For a list of the following
 pascal files please see the image below:
 
-![pascal files][pascal_file.png]
+![pascal files](pascal_file.png)
 
 To run the Compiler simply run the `compiler_simulator.py` file in the terminal. See below for an example.
 
