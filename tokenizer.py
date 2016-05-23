@@ -37,7 +37,9 @@ class Token:
             '>=': 'TK_GREATER_EQ',
             '<': 'TK_LESS',
             '<=': 'TK_LESS_EQ',
-            ':=': 'TK_ASSIGNMENT'
+            ':=': 'TK_ASSIGNMENT',
+            '[': 'TK_LEFT_BRACKET',
+            ']': 'TK_RIGHT_BRACKET'
         }
 
         self.TK_KEYWORDS = self.keyword_setup()
