@@ -15,7 +15,7 @@ class EmulatorModule(object):
     def echo_print_statements(self):
         print '============\nStandard Out\n============'
         for each in self.echo:
-            print each
+            sys.stdout.write(str(each))
 
     def print_instruction(self, instruction_pointer, operator):
         if instruction_pointer < 10:
@@ -127,9 +127,15 @@ class EmulatorModule(object):
         elif operator == OpCode.STOP:
             self.echo_print_statements()
             sys.exit()
+        elif operator == OpCode.DUMP_VALUES:
+            self.dump_values()
+            self.execute()
+        elif operator == OpCode.GET:
+            self.get()
+            self.execute()
         else:
             print self.data_stack
-            raise Error('%s not supported within the EmulatorModule!' % operator)
+            raise Error('%s [%s] not supported within the EmulatorModule!' % (operator, op_code_dict[operator]))
 
     def push_i(self):
         self.instruction_pointer += 1
@@ -239,3 +245,15 @@ class EmulatorModule(object):
         lhs = self.data_stack.pop()
         rhs = self.data_stack.pop()
         self.data_stack.append(lhs != rhs)
+
+    def dump_values(self):
+        self.instruction_pointer += 1
+        assignment = self.data_stack.pop()
+        self.data_pointer = self.data_stack.pop()
+        self.data_dict[self.data_pointer] = assignment
+        self.data_pointer += 1
+
+    def get(self):
+        self.instruction_pointer += 1
+        self.data_pointer = self.data_stack.pop()
+        self.data_stack.append(self.data_dict[self.data_pointer])

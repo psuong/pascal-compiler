@@ -36,6 +36,8 @@ class OpCode:
     LESS_THAN_EQ = 34
     POP_CHAR = 35
     PUSH_CHAR = 36
+    DUMP_VALUES = 37
+    GET = 38
 
 op_code_dict = {
     0: 'PUSHI',
@@ -74,7 +76,9 @@ op_code_dict = {
     33: 'LESS_THAN',
     34: 'LESS_THAN_EQ',
     35: 'POP_CHAR',
-    36: 'PUSH_CHAR'
+    36: 'PUSH_CHAR',
+    37: 'DUMP_VALUE',
+    38: 'GET'
 }
 
 instruction_length = 5

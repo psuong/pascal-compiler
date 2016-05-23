@@ -152,23 +152,74 @@ class ParserModule(object):
         elif self.current_token.token == 'TK_DATATYPE_BOOLEAN':
             self.match_token('TK_DATATYPE_BOOLEAN')
             data_type = 'TK_DATATYPE_BOOLEAN'
+        elif self.current_token.token == 'TK_KEYWORD_ARRAY':
+            self.match_token('TK_KEYWORD_ARRAY')
+            data_type = 'TK_KEYWORD_ARRAY'
         else:
-            raise Error('%s is an unknown data type' % self.current_token.tk_var)
+            raise Error('%s is an unknown data type' % self.current_token.token)
 
-        self.match_token('TK_SEMI_COLON')
+        if data_type == 'TK_KEYWORD_ARRAY':
+            self.match_token('TK_LEFT_BRACKET')
+            array_attributes = self.get_array_ranges(self.current_token)
+            self.match_token('TK_RIGHT_BRACKET')
+            self.match_token('TK_KEYWORD_OF')
+            if self.current_token.token == 'TK_DATATYPE_INTEGER':
+                self.match_token('TK_DATATYPE_INTEGER')
+                assignment = 'TK_DATATYPE_INTEGER'
+            else:
+                raise Error('Type [%s] is not supported in arrays' % self.current_token.token)
 
-        for each_var in var_declarations:
-            self.symbol_table.append(symbol.Symbol(
-                name=each_var.value,
-                object_type=symbol.VARIABLE,
-                data_type=data_type,
-                data_pointer=self.data_pointer
-            ))
-            self.data_pointer += 1
+            self.match_token('TK_SEMI_COLON')
+            attributes = {
+                'lhs': array_attributes['lhs'],
+                'rhs': array_attributes['rhs'],
+                'data_type': array_attributes['data_type'],
+                'assignment': assignment
+            }
+            if array_attributes['data_type'] == 'TK_DATATYPE_INTEGER':
+                for each_var in var_declarations:
+                    self.symbol_table.append(symbol.Symbol(name=each_var.value,
+                                                           object_type=symbol.ARRAY,
+                                                           data_type='TK_DATATYPE_ARRAY',
+                                                           data_pointer=self.data_pointer,
+                                                           attribute=attributes))
+                    self.data_pointer += 4 * int(array_attributes['rhs']) - int(array_attributes['lhs'])
+            else:
+                raise Error('Array access of %s is not supported' % attributes['data_type'])
+
+        else:
+            self.match_token('TK_SEMI_COLON')
+
+            for each_var in var_declarations:
+                self.symbol_table.append(symbol.Symbol(
+                    name=each_var.value,
+                    object_type=symbol.VARIABLE,
+                    data_type=data_type,
+                    data_pointer=self.data_pointer
+                ))
+                self.data_pointer += 1
         if self.current_token.token == 'TK_KEYWORD_VAR':
             self.case_var()
         else:
             self.case_begin()
+
+    def get_array_ranges(self, token):
+        self.match_token('TK_RANGE')
+        data = {}
+        list_of_ranges = token.value.split('..')
+        if len(list_of_ranges) != 2:
+            raise Error('The array range is off, the form is #..#, not %s' % token.value)
+        lhs = list_of_ranges[0]
+        rhs = list_of_ranges[1]
+
+        if lhs.isdigit() and rhs.isdigit():
+            lhs = int(lhs)
+            rhs = int(rhs)
+            data['data_type'] = 'TK_DATATYPE_INTEGER'
+        data['lhs'] = lhs
+        data['rhs'] = rhs
+        data['token'] = token
+        return data
 
     def case_writeln(self):
         self.match_token('TK_KEYWORD_WRITELN')
@@ -339,6 +390,9 @@ class ParserModule(object):
         symbol_entry = self.find_symbol_table_entry(self.current_token.value)
         left_hand_side = symbol_entry.data_type
         self.match_token('TK_IDENTIFIER')
+        if self.current_token.token == 'TK_LEFT_BRACKET':
+            self.assign_array(symbol_entry)
+            return
         self.match_token('TK_ASSIGNMENT')
         right_hand_side = self.expression()
         if left_hand_side == right_hand_side:
@@ -373,6 +427,11 @@ class ParserModule(object):
                 self.generate_opcode(byte_manager.OpCode.PUSH)
                 self.generate_address(symbol_entry.data_pointer)
                 self.match_token('TK_IDENTIFIER')
+                return symbol_entry.data_type
+            elif symbol_entry.object_type == symbol.ARRAY:
+                self.match_token('TK_IDENTIFIER')
+                self.access_array(symbol_entry)
+                self.generate_opcode(byte_manager.OpCode.GET)
                 return symbol_entry.data_type
         elif token == 'TK_KEYWORD_NOT':
             self.generate_address(byte_manager.OpCode.NOT)
@@ -533,7 +592,33 @@ class ParserModule(object):
         return term
 
     def access_array(self, symbol_entry):
-        pass
+        self.match_token('TK_LEFT_BRACKET')
+        current_symbol = self.find_symbol_table_entry(self.current_token.value)
+        self.generate_opcode(byte_manager.OpCode.PUSH)
+        self.generate_address(current_symbol.data_pointer)
+        self.match_token('TK_IDENTIFIER')
+        self.match_token('TK_RIGHT_BRACKET')
+
+        self.generate_opcode(byte_manager.OpCode.PUSHI)
+
+        if current_symbol.data_type == 'TK_DATATYPE_INTEGER':
+            self.generate_address(symbol_entry.lhs)
+            self.generate_opcode(byte_manager.OpCode.XCHG)
+            self.generate_opcode(byte_manager.OpCode.SUBTRACT)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(4)
+            self.generate_opcode(byte_manager.OpCode.MULTIPLY)
+            self.generate_opcode(byte_manager.OpCode.PUSHI)
+            self.generate_address(symbol_entry.data_pointer)
+            self.generate_opcode(byte_manager.OpCode.ADD)
+        else:
+            raise Error('Datatype %s, not supported in arrays yet' % current_symbol.data_type)
 
     def assign_array(self, symbol_entry):
-        pass
+        self.access_array(symbol_entry)
+        self.match_token('TK_ASSIGNMENT')
+        expression = self.expression()
+        if expression == symbol_entry.data_type:
+            self.generate_opcode(byte_manager.OpCode.DUMP_VALUES)
+        else:
+            raise Error('Mismatch in array assignment with %s and %s.' % (expression, symbol_entry.data_type))

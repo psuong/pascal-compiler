@@ -4,6 +4,7 @@ PROCEDURE = 'pro'
 EXPRESSION = 'expr'
 STATEMENT = 'stat'
 PARAMETER = 'par'
+ARRAY = 'arr'
 
 
 class Symbol(object):
@@ -11,9 +12,10 @@ class Symbol(object):
         self.name = name
         self.object_type = object_type
         self.data_type = data_type
-        self.attribute = attribute
+        if attribute is not None:
+            for key, value in attribute.iteritems():
+                self.__setattr__(key, value)
         self.data_pointer = data_pointer
-        self.attribute = attribute
 
     def __unicode__(self):
         return '%s, %s, %i' % (self.name, self.object_type, self.data_pointer)

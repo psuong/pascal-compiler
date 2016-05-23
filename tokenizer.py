@@ -55,7 +55,7 @@ class Token:
             'boolean': 'TK_DATATYPE_BOOLEAN',
             'char': 'TK_DATATYPE_CHARACTER'
         }
-
+        self.TK_RANGE = 'TK_RANGE'
         self.TK_VAR = 'TK_A_VAR'
         self.TK_STRING = 'TK_STRING_LIT'
         self.TK_ID = CONST_TK_ID
@@ -206,8 +206,12 @@ class Scanner:
             self.word += char
             self.current_state = self.scanner_state.digit
         elif char != '.' and char in self.special_chars:
-            if '.' in self.word:
+            if '.' in self.word and self.word.count('.') == 1:
                 TOKEN_LIST.append(TokenContainer(self.token.TK_DATATYPES['real'], self.word))
+                self.word = char
+                self.current_state = self.scanner_state.operator
+            elif '.' in self.word and self.word.count('.') == 2:
+                TOKEN_LIST.append(TokenContainer(self.token.TK_RANGE, self.word))
                 self.word = char
                 self.current_state = self.scanner_state.operator
             else:
@@ -247,6 +251,9 @@ class Scanner:
         """
         if char in self.special_chars:
             if '(' in self.word or ')' in self.word and char == ';':
+                TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
+                self.word = char
+            elif ']' in self.word and char == ';':
                 TOKEN_LIST.append(TokenContainer(self.token.get_token(self.word), self.word))
                 self.word = char
             else:
