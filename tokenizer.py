@@ -8,6 +8,7 @@ TK_OPERATOR = 'TK_OPERATOR'
 
 
 def print_token_list():
+    print "===========\nTokens\n==========="
     for each in TOKEN_LIST:
         print 'ID: %s, Value: %s' % (each.token, each.value)
 

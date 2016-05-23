@@ -1,6 +1,8 @@
 import byte_manager
 import symbol
 
+TOKEN_MATCHING_LIST = []
+
 
 class Error(Exception):
     pass
@@ -14,6 +16,11 @@ class ParserModule(object):
         self.data_pointer = 0
         self.symbol_table = []
         self.byte_array = bytearray(500)  # For now allocate a large amount of memory
+
+    def print_token_matching(self):
+        print "============\nParser Module\n============"
+        for each_match in TOKEN_MATCHING_LIST:
+            print each_match
 
     def find_symbol_table_entry(self, name):
         """
@@ -34,7 +41,7 @@ class ParserModule(object):
         :return: None
         """
         if self.current_token.token == token_type:
-            print 'Matched: %s, %s ' % (token_type, self.current_token.value)
+            TOKEN_MATCHING_LIST.append('Matched: %s, %s ' % (token_type, self.current_token.value))
             try:
                 # Get the next token list if available
                 self.current_token = self.token_list.next()

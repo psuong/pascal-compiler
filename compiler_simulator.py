@@ -17,14 +17,17 @@ def load_pascal_file():
     # Read the memory file and produce tokens
     scanner.read_memory_file()
 
-    # Print the token list
-    print_token_list()
+    # Print the token list, uncomment if you would like to see the output.
+    # print_token_list()
 
     # Assign the token list to the parser
     parser = ParserModule(iter(TOKEN_LIST))
 
     # Parse the tokens
     parser.parse()
+
+    # Print out all tokens being matched, uncomment if you would like to see it happen.
+    # parser.print_token_matching()
 
     # Create the emulator module
     emulator = EmulatorModule(parser.byte_array)

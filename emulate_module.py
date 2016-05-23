@@ -1,5 +1,5 @@
-from parser_module import Error, ParserModule
-from byte_manager import OpCode, byte_packer, byte_unpacker, op_code_dict
+from parser_module import Error
+from byte_manager import OpCode, byte_unpacker, op_code_dict
 import sys
 
 
@@ -17,13 +17,14 @@ class EmulatorModule(object):
         for each in self.echo:
             sys.stdout.write(str(each))
 
-    def print_instruction(self, instruction_pointer, operator):
-        if instruction_pointer < 10:
-            print 'Instruction Pointer: 0%s \t | \tMatching: %s, %s' % (
-                instruction_pointer, op_code_dict[operator], operator)
-        else:
-            print 'Instruction Pointer: %s \t | \tMatching: %s, %s' % (
-                instruction_pointer, op_code_dict[operator], operator)
+    def print_instruction(self, instruction_pointer, operator, do_print=False):
+        if do_print:
+            if instruction_pointer < 10:
+                print 'Instruction Pointer: 0%s \t | \tMatching: %s, %s' % (
+                    instruction_pointer, op_code_dict[operator], operator)
+            else:
+                print 'Instruction Pointer: %s \t | \tMatching: %s, %s' % (
+                    instruction_pointer, op_code_dict[operator], operator)
 
     def get_immediate_value(self):
         bytes_to_unpack = bytearray()
@@ -50,6 +51,8 @@ class EmulatorModule(object):
 
     def execute(self):
         operator = self.byte_array[self.instruction_pointer]
+
+        # Assign do_print to true if you'd like to print out the instructions
         self.print_instruction(self.instruction_pointer, operator)
 
         if operator == OpCode.PUSHI:
@@ -134,7 +137,6 @@ class EmulatorModule(object):
             self.get()
             self.execute()
         else:
-            print self.data_stack
             raise Error('%s [%s] not supported within the EmulatorModule!' % (operator, op_code_dict[operator]))
 
     def push_i(self):
