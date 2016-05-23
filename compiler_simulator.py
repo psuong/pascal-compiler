@@ -1,7 +1,7 @@
 # mv@panix.com : zip
 from tokenizer import FileManager, Scanner, TOKEN_LIST, print_token_list
-from parsermodule import ParserModule
-from emulator import EmulatorModule
+from parser_module import ParserModule
+from emulate_module import EmulatorModule
 
 
 def load_pascal_file():

@@ -1,4 +1,4 @@
-from parsermodule import Error, ParserModule
+from parser_module import Error, ParserModule
 from byte_manager import OpCode, byte_packer, byte_unpacker, op_code_dict
 import sys
 
