@@ -25,6 +25,9 @@ To run the Compiler simply run the `compiler_simulator.py` file in the terminal.
 `python compiler_simulator.py pascal_files/arrays.pas`
 
 ### Compiler Info
+#### WARNING #####
+
+My compiler currently only supports printing *integer* and *real values*. *Real* values are only printed if doing division (/) operation.
 
 The `compiler_simulator.py` script executes the following modules in order:
 
@@ -36,3 +39,11 @@ Other files include:
 
 - `byte_manager.py` -> Allows the compiler to create bytearray and unpack it
 - `symbol.py` -> Module holds an instance of a `Symbol` object entry for the Symbol table
+
+### Some Thanks
+
+Thanks to the following people for helping me construct the compiler:
+
+- [MD Islam](https://github.com/exp0nge)
+- [Chris Yang](https://github.com/cyang)
+- [Claudia Yan](https://github.com/s1cyan)
