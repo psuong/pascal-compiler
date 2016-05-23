@@ -26,11 +26,11 @@ class EmulatorModule(object):
                 instruction_pointer, op_code_dict[operator], operator)
 
     def get_immediate_value(self):
-        immediate_value = bytearray()
+        bytes_to_unpack = bytearray()
         for index in range(4):
-            immediate_value.append(self.byte_array[self.instruction_pointer])
+            bytes_to_unpack.append(self.byte_array[self.instruction_pointer])
             self.instruction_pointer += 1
-        value = byte_unpacker(immediate_value)
+        value = byte_unpacker(bytes_to_unpack)
         return value
 
     def get_immediate_data(self):

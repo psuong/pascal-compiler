@@ -531,3 +531,9 @@ class ParserModule(object):
             term_1 = self.term()
             term = self.emit(token, term, term_1)
         return term
+
+    def access_array(self, symbol_entry):
+        pass
+
+    def assign_array(self, symbol_entry):
+        pass
